@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://cfb2i8pmf5k75"]
+
+[ext_resource type="Script" uid="uid://dgt617pmmevaq" path="res://Scripts/player.gd" id="1_cvnsp"]
+[ext_resource type="Texture2D" uid="uid://b7g83p6ulhfb2" path="res://icon.svg" id="1_v0iea"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
+size = Vector2(54, 125)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_cvnsp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-0.999999, -69)
+scale = Vector2(0.445312, 1)
+texture = ExtResource("1_v0iea")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, -69)
+shape = SubResource("RectangleShape2D_cvnsp")
+
+[node name="SlideTime" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
