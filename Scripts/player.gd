@@ -40,12 +40,11 @@ func _physics_process(_delta):
 		$SlideTime.start()
 	
 	input_dir = input_dir.normalized()
+
 	is_moving = input_dir != Vector2.ZERO
-	
 	if is_moving:
 		last_move_direction = input_dir
-		#print("Last direction updated to:", last_move_direction)
-	
+
 	if is_sliding:
 		velocity = slide_direction * moveSpeed * slideSpeed
 		slideFrames -= 1
@@ -53,13 +52,9 @@ func _physics_process(_delta):
 			is_sliding = false
 	else:
 		velocity = input_dir * moveSpeed
+
 	move_and_slide()
-
-func _on_SlideTime_timeout():
-	print("Slide is ready")
-	can_slide = true
-
 
 func _on_slide_time_timeout() -> void:
 	print("Slide is ready")
-	can_slide = true # Replace with function body.
+	can_slide = true
