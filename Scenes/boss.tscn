@@ -1,13 +1,13 @@
 [gd_scene load_steps=5 format=3 uid="uid://dsde34qqy16lw"]
 
-[ext_resource type="Script" uid="uid://jo2h1k257hpb" path="res://Scenes/boss.gd" id="1_wwfse"]
+[ext_resource type="Script" uid="uid://jo2h1k257hpb" path="res://Scripts/boss.gd" id="1_wwfse"]
 [ext_resource type="Texture2D" uid="uid://b7g83p6ulhfb2" path="res://icon.svg" id="2_cxrok"]
-[ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scripts/bullet.tscn" id="3_cxrok"]
+[ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="3_cxrok"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ukjjc"]
 size = Vector2(125, 125)
 
-[node name="boss" type="CharacterBody2D"]
+[node name="Boss" type="CharacterBody2D" groups=["Boss"]]
 script = ExtResource("1_wwfse")
 bullet_scene = ExtResource("3_cxrok")
 
@@ -18,7 +18,5 @@ texture = ExtResource("2_cxrok")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0.5, -67.5)
 shape = SubResource("RectangleShape2D_ukjjc")
-
-[node name="ShootTimer" type="Timer" parent="."]
 
 [node name="bullet" parent="." instance=ExtResource("3_cxrok")]

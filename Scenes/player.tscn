@@ -1,13 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://cfb2i8pmf5k75"]
+[gd_scene load_steps=5 format=3 uid="uid://cfb2i8pmf5k75"]
 
 [ext_resource type="Script" uid="uid://dgt617pmmevaq" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://b7g83p6ulhfb2" path="res://icon.svg" id="1_v0iea"]
+[ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="2_6t5aa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
 size = Vector2(54, 125)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_cvnsp")
+bullet_scene = ExtResource("2_6t5aa")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(-0.999999, -69)
@@ -21,5 +23,7 @@ shape = SubResource("RectangleShape2D_cvnsp")
 [node name="SlideTime" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
 
 [connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
