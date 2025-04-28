@@ -4,6 +4,8 @@ extends CharacterBody2D
 @export var slideCooldown = 1.0 # seconds
 @export var slideSpeed = 3.0 # multiplier
 @export var slideDuration = 10 # in frames
+@export var max_hits: int = 3
+@export var endgame_scene: PackedScene
 
 var is_moving = false
 var can_slide = true
@@ -11,6 +13,8 @@ var is_sliding = false
 var slideFrames = 0
 var slide_direction = Vector2.ZERO
 var last_move_direction = Vector2.ZERO
+var current_hits: int = 0
+var is_dead: bool = false
 
 func _ready():
 	if $SlideTime is Timer:
@@ -54,6 +58,25 @@ func _physics_process(_delta):
 		velocity = input_dir * moveSpeed
 
 	move_and_slide()
+
+func take_damage():
+	if is_dead:
+		return
+	
+	current_hits += 1
+	print("Player hit! Hits:", current_hits, "/", max_hits)
+	
+	if current_hits >= max_hits:
+		die()
+
+func die():
+	is_dead = true
+	print("Player dead")
+	
+	if endgame_scene != null:
+		get_tree().change_scene_to_packed(endgame_scene)
+	else:
+		push_error("Endgame Scene not assigned!")
 
 func _on_slide_time_timeout() -> void:
 	print("Slide is ready")

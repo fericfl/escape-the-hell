@@ -15,6 +15,10 @@ run/main_scene="uid://cspwlvc8phxbg"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[global_group]
+
+Player=""
+
 [input]
 
 move_left={
