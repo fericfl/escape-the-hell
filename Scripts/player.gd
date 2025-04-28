@@ -83,7 +83,8 @@ func die():
 	
 	queue_free()
 	if endgame_scene != null:
-		get_tree().change_scene_to_packed(endgame_scene)
+		get_tree().quit()
+		#get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		push_error("Endgame Scene not assigned!")
 
@@ -93,6 +94,7 @@ func shoot():
 		return
 	var bullet = bullet_scene.instantiate()
 	bullet.bullet_owner = "Player"
+	bullet.speed = 500
 	get_parent().add_child(bullet)
 	
 	bullet.global_position = global_position

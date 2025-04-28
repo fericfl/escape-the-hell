@@ -5,18 +5,19 @@
 [ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="3_cxrok"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ukjjc"]
-size = Vector2(125, 125)
+size = Vector2(83.25, 82.25)
 
 [node name="Boss" type="CharacterBody2D" groups=["Boss"]]
 script = ExtResource("1_wwfse")
 bullet_scene = ExtResource("3_cxrok")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -68)
+position = Vector2(9.53674e-07, -43)
+scale = Vector2(0.648438, 0.648438)
 texture = ExtResource("2_cxrok")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -67.5)
+position = Vector2(0.375, -42.875)
 shape = SubResource("RectangleShape2D_ukjjc")
 
 [node name="bullet" parent="." instance=ExtResource("3_cxrok")]

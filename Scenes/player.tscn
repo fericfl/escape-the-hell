@@ -5,19 +5,19 @@
 [ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="2_6t5aa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(54, 125)
+size = Vector2(54, 60.5)
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_cvnsp")
 bullet_scene = ExtResource("2_6t5aa")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-0.999999, -69)
-scale = Vector2(0.445312, 1)
+position = Vector2(-1.74998, -36)
+scale = Vector2(0.433593, 0.484375)
 texture = ExtResource("1_v0iea")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, -69)
+position = Vector2(-1, -36.75)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="SlideTime" type="Timer" parent="."]
@@ -25,5 +25,8 @@ wait_time = 0.5
 one_shot = true
 
 [node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.24, 1.24)
 
 [connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
