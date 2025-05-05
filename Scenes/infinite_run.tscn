@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cn5vtchjcnkkt"]
+
+[ext_resource type="PackedScene" uid="uid://cfb2i8pmf5k75" path="res://Scenes/player.tscn" id="1_lw30r"]
+
+[node name="Infinite Run" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_lw30r")]
+
+[node name="TileMap" type="TileMap" parent="."]
+format = 2

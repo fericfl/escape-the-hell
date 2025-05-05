@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var endgame_scene: PackedScene
 @export var bullet_scene: PackedScene
 @export var shoot_cooldown: float = 0.5
+@export var animation_player: AnimationPlayer
 
 var is_moving = false
 var can_slide = true
@@ -18,11 +19,18 @@ var last_move_direction = Vector2.ZERO
 var current_hits: int = 0
 var is_dead: bool = false
 var shoot_timer: float = 0.0
+var camera: Camera2D
+var face_locked: bool = false
 
 func _ready():
+	camera = get_parent().get_node("Camera2D")
 	if $SlideTime is Timer:
 		$SlideTime.wait_time = slideCooldown
 		$SlideTime.one_shot = true
+	else:
+		push_error("SlideTime node is missing or not a Timer!")
+	if $FaceLockTime is Timer:
+		$FaceLockTime.one_shot = true
 	else:
 		push_error("SlideTime node is missing or not a Timer!")
 
@@ -47,11 +55,16 @@ func _physics_process(_delta):
 		$SlideTime.start()
 	
 	input_dir = input_dir.normalized()
-
 	is_moving = input_dir != Vector2.ZERO
-	if is_moving:
-		last_move_direction = input_dir
 
+	if is_moving:
+		if not face_locked:
+			if velocity.x != 0:
+				$Sprite2D.flip_h = velocity.x < 0
+		animation_player.play("walk")
+	else:
+		animation_player.play("idle")
+	
 	if is_sliding:
 		velocity = slide_direction * moveSpeed * slideSpeed
 		slideFrames -= 1
@@ -83,8 +96,8 @@ func die():
 	
 	queue_free()
 	if endgame_scene != null:
-		get_tree().quit()
-		#get_tree().change_scene_to_packed(endgame_scene)
+		#get_tree().quit()
+		get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		push_error("Endgame Scene not assigned!")
 
@@ -92,17 +105,23 @@ func shoot():
 	if bullet_scene == null:
 		push_error("No bullet scene assigned to player!")
 		return
+	
 	var bullet = bullet_scene.instantiate()
 	bullet.bullet_owner = "Player"
-	bullet.speed = 500
 	get_parent().add_child(bullet)
-	
 	bullet.global_position = global_position
-	var mouse_position = get_viewport().get_mouse_position()
-	var direction_to_mouse = (mouse_position - global_position).normalized()
 	
+	var mouse_position = get_viewport().get_camera_2d().get_global_mouse_position()
+	var direction_to_mouse = (mouse_position - global_position).normalized()
 	bullet.set_direction(direction_to_mouse)
+	
+	$Sprite2D.flip_h = direction_to_mouse.x < 0
+	face_locked = true
+	$FaceLockTime.start()
 
 func _on_slide_time_timeout() -> void:
 	print("Slide is ready")
 	can_slide = true
+	
+func _on_face_lock_timer_timeout() -> void:
+	face_locked = false

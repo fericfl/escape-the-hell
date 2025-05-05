@@ -5,6 +5,7 @@ extends CharacterBody2D
 @export var bullet_scene: PackedScene
 @export var endgame_scene: PackedScene
 @export var max_hits: int = 5
+@export var animation_player: AnimationPlayer
 
 var player: CharacterBody2D = null
 var shoot_timer: float = 0.0
@@ -23,7 +24,10 @@ func _physics_process(delta):
 	var direction = (player.global_position - global_position).normalized()
 	
 	velocity = direction * move_speed
-	
+	if direction.x < 0:
+		get_node("Sprite2D").flip_h = true
+	else:
+		get_node("Sprite2D").flip_h = false
 	move_and_slide()
 	
 	shoot_timer -= delta
@@ -47,8 +51,8 @@ func die():
 	
 	queue_free()
 	if endgame_scene != null:
-		get_tree().quit()
-		#get_tree().change_scene_to_packed(endgame_scene)
+		#get_tree().quit()
+		get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		push_error("Endgame Scene not assigned!")
 
@@ -57,6 +61,7 @@ func shoot_at_player():
 		push_error("No bullet scene assigned to boss!")
 		return
 	
+	animation_player.play("shoot")
 	var bullet = bullet_scene.instantiate()
 	bullet.bullet_owner = "Boss"
 	get_parent().add_child(bullet)
