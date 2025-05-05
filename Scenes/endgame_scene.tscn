@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cr17uii3iawqj"]
+
+[node name="Endgame Scene" type="Node2D"]
+
+[node name="RichTextLabel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 702.0
+offset_top = 281.0
+offset_right = 1706.0
+offset_bottom = 780.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "You died. Game over!
+"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(965, 539)

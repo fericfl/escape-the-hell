@@ -1,25 +1,102 @@
-[gd_scene load_steps=4 format=3 uid="uid://cfb2i8pmf5k75"]
+[gd_scene load_steps=10 format=3 uid="uid://cfb2i8pmf5k75"]
 
 [ext_resource type="Script" uid="uid://dgt617pmmevaq" path="res://Scripts/player.gd" id="1_cvnsp"]
-[ext_resource type="Texture2D" uid="uid://b7g83p6ulhfb2" path="res://icon.svg" id="1_v0iea"]
+[ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="2_6t5aa"]
+[ext_resource type="PackedScene" uid="uid://cr17uii3iawqj" path="res://Scenes/endgame_scene.tscn" id="2_vgqql"]
+[ext_resource type="Texture2D" uid="uid://c2p07pccdpd4t" path="res://Assets/Sprites/Characters/Player/Version1/imp_idle_anim_f0-sheet.png" id="3_6t5aa"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(54, 125)
+size = Vector2(29, 40.84)
 
-[node name="Player" type="CharacterBody2D"]
+[sub_resource type="Animation" id="Animation_vgqql"]
+resource_name = "walk"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.00178906, 0.1, 0.2, 0.280883),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_fkybt"]
+resource_name = "idle"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.8, 1.18),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [1, 1, 1, 3]
+}
+
+[sub_resource type="Animation" id="Animation_x3wgy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3smsa"]
+_data = {
+&"RESET": SubResource("Animation_x3wgy"),
+&"idle": SubResource("Animation_fkybt"),
+&"walk": SubResource("Animation_vgqql")
+}
+
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_player") groups=["Player"]]
 script = ExtResource("1_cvnsp")
+endgame_scene = ExtResource("2_vgqql")
+bullet_scene = ExtResource("2_6t5aa")
+animation_player = NodePath("AnimationPlayer")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-0.999999, -69)
-scale = Vector2(0.445312, 1)
-texture = ExtResource("1_v0iea")
+texture_filter = 1
+position = Vector2(-1.19209e-07, -28)
+scale = Vector2(3, 3.345)
+texture = ExtResource("3_6t5aa")
+hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, -69)
+position = Vector2(3.5, -20.58)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="SlideTime" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
 
+[node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
+visible = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.24, 1.24)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_3smsa")
+}
+
+[node name="FaceLockTime" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
 [connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
+[connection signal="timeout" from="FaceLockTime" to="." method="_on_face_lock_timer_timeout"]
