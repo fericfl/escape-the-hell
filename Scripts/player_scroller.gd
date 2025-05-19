@@ -27,7 +27,7 @@ func _physics_process(_delta: float) -> void:
 		else:
 			is_jumping = false
 			update_lane_position()
-	animation_player.play("run")
+	animation_player.play("run") 
 	move_and_slide()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -39,7 +39,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if current_lane < LANES.size() - 1:
 			current_lane += 1
 			update_lane_position()
-	elif event.is_action_pressed("jump"):
+	elif event.is_action_pressed("jump") and is_jumping == false:
 		start_jump()
 
 func start_jump():

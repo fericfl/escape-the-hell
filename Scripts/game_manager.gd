@@ -39,3 +39,6 @@ func generate_column(x: int) -> void:
 		if randi() % 100 < 30:
 			tilemap.set_cell(spike1_pos, SOURCE_ID, SPIKE_TILE)
 			tilemap.set_cell(spike2_pos, SOURCE_ID, SPIKE_TILE)
+		else:
+			tilemap.set_cell(spike1_pos, SOURCE_ID, GROUND_TILE)
+			tilemap.set_cell(spike2_pos, SOURCE_ID, GROUND_TILE)
