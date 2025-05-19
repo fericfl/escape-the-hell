@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=4 uid="uid://cn5vtchjcnkkt"]
+[gd_scene load_steps=8 format=4 uid="uid://cn5vtchjcnkkt"]
 
 [ext_resource type="Texture2D" uid="uid://ckafe35ri32ny" path="res://Assets/Sprites/TileMaps/atlas_floor-16x16.png" id="1_q1u03"]
 [ext_resource type="Texture2D" uid="uid://dejbjos7ghuol" path="res://Assets/Sprites/TileMaps/atlas_walls_low-16x16.png" id="2_2yuk5"]
 [ext_resource type="PackedScene" uid="uid://67oa117ffhad" path="res://Scenes/player_scroller.tscn" id="2_q1u03"]
 [ext_resource type="PackedScene" uid="uid://sh4hnbdaxm0j" path="res://Scenes/game_manager.tscn" id="4_ioilu"]
-[ext_resource type="Script" uid="uid://drtg028t6nsj4" path="res://Scripts/player_scroller.gd" id="4_uxagy"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2yuk5"]
 texture = ExtResource("1_q1u03")
@@ -119,7 +118,6 @@ tile_set = SubResource("TileSet_ioilu")
 
 [node name="PlayerScroller" parent="." instance=ExtResource("2_q1u03")]
 position = Vector2(10, 93)
-script = ExtResource("4_uxagy")
 SPEED = 50
 
 [node name="GameManager" parent="." node_paths=PackedStringArray("tilemap", "player") instance=ExtResource("4_ioilu")]
