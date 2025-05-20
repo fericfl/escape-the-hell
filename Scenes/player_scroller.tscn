@@ -64,7 +64,7 @@ libraries = {
 }
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(6, 6)
+zoom = Vector2(5, 5)
 drag_vertical_enabled = true
 drag_top_margin = 1.0
 drag_bottom_margin = 1.0
