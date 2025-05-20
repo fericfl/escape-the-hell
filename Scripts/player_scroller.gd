@@ -7,6 +7,7 @@ extends CharacterBody2D
 @export var JUMP_DURATION = 0.5 
 @export var endgame_scene: PackedScene
 @export var animation_player: AnimationPlayer
+@export var sprite: Sprite2D
 @export var tilemap: TileMapLayer
 @export var SPIKE_TILE = Vector2i(3, 3)
 
@@ -48,12 +49,27 @@ func _unhandled_input(event: InputEvent) -> void:
 		if current_lane > 0:
 			current_lane -= 1
 			target_y = LANES[current_lane]
+		else:
+			wiggle()
 	elif event.is_action_pressed("change_lane_down"):
 		if current_lane < LANES.size() - 1:
 			current_lane += 1
 			target_y = LANES[current_lane]
+		else:
+			wiggle()
 	elif event.is_action_pressed("jump") and is_jumping == false:
 		start_jump()
+		
+func wiggle():
+	var original_y := sprite.position.y
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_SINE)
+	tween.set_ease(Tween.EASE_IN_OUT)
+	
+	tween.tween_property(sprite, "position:y", original_y + 3, 0.075)
+	tween.tween_property(sprite, "position:y", original_y - 3, 0.075)
+	tween.tween_property(sprite, "position:y", original_y, 0.05)
+	
 
 func start_jump():
 	is_jumping = true

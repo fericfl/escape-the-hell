@@ -43,9 +43,10 @@ _data = {
 &"run": SubResource("Animation_6mbfx")
 }
 
-[node name="PlayerScroller" type="CharacterBody2D" node_paths=PackedStringArray("animation_player")]
+[node name="PlayerScroller" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "sprite")]
 script = ExtResource("1_l1yfg")
 animation_player = NodePath("AnimationPlayer")
+sprite = NodePath("Sprite2D")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
