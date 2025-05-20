@@ -6,7 +6,7 @@ extends CharacterBody2D
 @export var animation_player: AnimationPlayer
 
 const LANE_HEIGHT = 32
-const LANES = [46, 92, 140]
+const LANES = [96, 144, 192]
 var current_lane = 1
 var is_jumping = false
 var jump_timer = 0.0
