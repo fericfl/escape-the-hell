@@ -27,12 +27,13 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/discord-rpc-gd/plugin.cfg")
+enabled=PackedStringArray()
 
 [global_group]
 
 Player=""
 Boss=""
+Wall=""
 
 [input]
 
