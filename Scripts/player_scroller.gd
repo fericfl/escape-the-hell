@@ -10,6 +10,7 @@ extends CharacterBody2D
 @export var sprite: Sprite2D
 @export var tilemap: TileMapLayer
 @export var SPIKE_TILE = Vector2i(3, 3)
+@onready var shadow = $Shadow
 
 const LANE_HEIGHT = 32
 const LANES = [96, 144, 192]
@@ -20,10 +21,12 @@ var original_y = 0.0
 var current_speed = NORMAL_SPEED
 var did_hit_spike = false
 var target_y: float = 0.0
+var souls = 0
 
 func _ready():
 	position.y = LANES[current_lane]
 	target_y = position.y
+
 
 func _physics_process(delta: float) -> void:
 	global_position.y = lerp(global_position.y, target_y, 8 * delta)
@@ -36,13 +39,16 @@ func _physics_process(delta: float) -> void:
 		var jump_offset = -JUMP_HEIGHT * sin(t * PI)
 		if jump_timer > 0:
 			global_position.y = original_y + jump_offset
+			shadow.modulate.a = 0.0
 		else:
 			is_jumping = false
 			target_y = LANES[current_lane]
 			animation_player.speed_scale = 1
+			shadow.modulate.a = 0.4
 	animation_player.play("run")
 	check_spike_collision() 
 	move_and_slide()
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("change_lane_up"):
@@ -59,23 +65,25 @@ func _unhandled_input(event: InputEvent) -> void:
 			wiggle()
 	elif event.is_action_pressed("jump") and is_jumping == false:
 		start_jump()
-		
+
+
 func wiggle():
-	var original_y := sprite.position.y
+	var reffrence_y := sprite.position.y
 	var tween := create_tween()
 	tween.set_trans(Tween.TRANS_SINE)
 	tween.set_ease(Tween.EASE_IN_OUT)
 	
-	tween.tween_property(sprite, "position:y", original_y + 3, 0.075)
-	tween.tween_property(sprite, "position:y", original_y - 3, 0.075)
-	tween.tween_property(sprite, "position:y", original_y, 0.05)
-	
+	tween.tween_property(sprite, "position:y", reffrence_y + 3, 0.075)
+	tween.tween_property(sprite, "position:y", reffrence_y - 3, 0.075)
+	tween.tween_property(sprite, "position:y", reffrence_y, 0.05)
+
 
 func start_jump():
 	is_jumping = true
 	jump_timer = JUMP_DURATION
 	original_y = global_position.y
 	animation_player.speed_scale = 0.5
+
 
 func check_spike_collision():
 	if is_jumping:
@@ -95,3 +103,8 @@ func check_spike_collision():
 	else:
 		did_hit_spike = false
 		current_speed = NORMAL_SPEED
+
+
+func on_soul_collected():
+	souls += 1
+	print("Souls: ", souls)

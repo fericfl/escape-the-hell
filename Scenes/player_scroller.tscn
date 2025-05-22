@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://67oa117ffhad"]
+[gd_scene load_steps=8 format=3 uid="uid://67oa117ffhad"]
 
 [ext_resource type="Texture2D" uid="uid://c2wh24s4bk6px" path="res://Assets/Sprites/Characters/Player/Version1/imp_run_anim_f0-sheet.png" id="1_6mbfx"]
 [ext_resource type="Script" uid="uid://drtg028t6nsj4" path="res://Scripts/player_scroller.gd" id="1_l1yfg"]
+[ext_resource type="Texture2D" uid="uid://xo7fe4lnlf6g" path="res://Assets/Sprites/Characters/Player/Version1/imp_idle_anim_f0.png" id="3_ta1tj"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l1yfg"]
 size = Vector2(9, 8)
@@ -43,10 +44,19 @@ _data = {
 &"run": SubResource("Animation_6mbfx")
 }
 
-[node name="PlayerScroller" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "sprite")]
+[node name="PlayerScroller" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "sprite") groups=["Player"]]
+collision_layer = 2
 script = ExtResource("1_l1yfg")
 animation_player = NodePath("AnimationPlayer")
 sprite = NodePath("Sprite2D")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+visibility_layer = 2
+texture_filter = 1
+position = Vector2(0, 6)
+scale = Vector2(1, -1)
+texture = ExtResource("3_ta1tj")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1

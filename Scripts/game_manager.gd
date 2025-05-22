@@ -2,6 +2,7 @@ extends Node2D
 
 @export var tilemap: TileMapLayer
 @export var player: CharacterBody2D
+@export var soul_scene: PackedScene
 @export var SPAWN_DELAY_TILES = 5
 @export var SPIKE_SPAWN_CHANCE = 30
 
@@ -48,8 +49,6 @@ func generate_column(x: int) -> void:
 				tilemap.set_cell(Vector2i(x, y), 0, tile)
 			_:
 				pass
-	if x % 2 != 0:
-		return
 	
 	var spike_range = SPIKE_Y_RANGES[randi() % SPIKE_Y_RANGES.size()]
 	var group_width = randi_range(1, 3)
@@ -61,3 +60,28 @@ func generate_column(x: int) -> void:
 			for dy in range(spike_range.x, spike_range.y + 1):
 				var pos = Vector2i(x + dx, dy)
 				tilemap.set_cell(pos, 0, SPIKE_TILE)
+	else:
+		if randi() % 100 < 60:
+			var safe_lanes := []
+			
+			for ground_y in GROUND_Y_POSITIONS:
+				var spike_y_range = Vector2i(ground_y - 2, ground_y - 1)
+				var has_spike = false
+				
+				for y in range(spike_y_range.x, spike_y_range.y + 1):
+					if tilemap.get_cell_source_id(Vector2i(x, y)) == 0 and tilemap.get_cell_atlas_coords(Vector2i(x,y)) == SPIKE_TILE:
+						has_spike = true
+						break
+					
+				if not has_spike:
+					safe_lanes.append(ground_y)
+			
+			if safe_lanes.size() > 0:
+				var chosen_y = safe_lanes[randi() % safe_lanes.size()]
+				var soul_tile_coords = Vector2i(x, chosen_y)
+				var soul_pixel_pos = tilemap.map_to_local(soul_tile_coords) - Vector2(24,24)
+				
+				var soul = soul_scene.instantiate()
+				soul.global_position = soul_pixel_pos
+				soul.connect("collected", Callable(player, "on_soul_collected"))
+				add_child(soul)
