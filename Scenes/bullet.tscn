@@ -6,10 +6,11 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_khrry"]
 size = Vector2(18, 12)
 
-[node name="bullet" type="Area2D" groups=["Boss", "Player"]]
+[node name="bullet" type="Area2D" groups=["Boss", "Player", "Wall"]]
 script = ExtResource("1_oduel")
+speed = 150.0
 
-[node name="Icon" type="Sprite2D" parent="."]
+[node name="Bullet" type="Sprite2D" parent="."]
 texture_filter = 1
 position = Vector2(0, -7)
 scale = Vector2(0.5, 0.5)
