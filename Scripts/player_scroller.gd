@@ -5,7 +5,9 @@ extends CharacterBody2D
 @export var lives: int = 3
 @export var JUMP_HEIGHT = 12
 @export var JUMP_DURATION = 0.5 
+@export var score_threshold: int  = 500
 @export var endgame_scene: PackedScene
+@export var boss_room: PackedScene
 @export var animation_player: AnimationPlayer
 @export var sprite: Sprite2D
 @export var tilemap: TileMapLayer
@@ -22,6 +24,8 @@ var current_speed = NORMAL_SPEED
 var did_hit_spike = false
 var target_y: float = 0.0
 var souls = 0
+var score = 0
+var last_x = 0
 
 func _ready():
 	position.y = LANES[current_lane]
@@ -33,6 +37,15 @@ func _physics_process(delta: float) -> void:
 	velocity.x = current_speed
 	velocity.y = 0
 	
+	# Scoring logic
+	var moved_distance = int(global_position.x - last_x)
+	if moved_distance > 0:
+		score += moved_distance
+		last_x = int(global_position.x)
+	if score >= score_threshold:
+		get_tree().change_scene_to_packed(boss_room)
+	
+	# Jump logic
 	if is_jumping:
 		jump_timer -= delta
 		var t = 1.0 - (jump_timer / JUMP_DURATION)

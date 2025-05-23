@@ -136,8 +136,11 @@ sources/0 = SubResource("TileSetAtlasSource_q04ek")
 [node name="Player" parent="." instance=ExtResource("1_0x2vs")]
 position = Vector2(162, 175)
 
-[node name="boss" parent="." instance=ExtResource("2_lu0rs")]
-position = Vector2(535, 168)
+[node name="Boss" parent="." instance=ExtResource("2_lu0rs")]
+position = Vector2(558, 158)
+move_speed = 10
+shoot_cooldown = 1.5
+max_hits = 5
 
 [node name="Ground" type="TileMapLayer" parent="."]
 z_index = -2

@@ -3,7 +3,7 @@ extends CharacterBody2D
 @export var move_speed = 10
 @export var shoot_cooldown: float = 1.5
 @export var bullet_scene: PackedScene
-@export var endgame_scene: PackedScene
+@export var infinite_run = "res://Scenes/infinite_run.tscn"
 @export var max_hits: int = 5
 @export var animation_player: AnimationPlayer
 
@@ -50,11 +50,8 @@ func die():
 	print("Boss defeated!")
 	
 	queue_free()
-	if endgame_scene != null:
-		#get_tree().quit()
-		get_tree().change_scene_to_packed(endgame_scene)
-	else:
-		push_error("Endgame Scene not assigned!")
+	get_tree().change_scene_to_file(infinite_run)
+	
 
 func shoot_at_player():
 	if bullet_scene == null:

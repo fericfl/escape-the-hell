@@ -85,7 +85,6 @@ one_shot = true
 
 [node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
 visible = false
-speed = 150.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(5, 5)
