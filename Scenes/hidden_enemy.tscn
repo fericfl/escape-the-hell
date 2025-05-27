@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://dyk75r81fimdd"]
+
+[ext_resource type="Script" uid="uid://d225jf3e8yyvb" path="res://Scripts/hidden_enemy.gd" id="1_e41xn"]
+
+[node name="Hidden_Enemy" type="CharacterBody2D"]
+script = ExtResource("1_e41xn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[node name="Timer" type="Timer" parent="."]
