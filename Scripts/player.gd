@@ -9,6 +9,7 @@ extends CharacterBody2D
 @export var bullet_scene: PackedScene
 @export var shoot_cooldown: float = 0.5
 @export var animation_player: AnimationPlayer
+@export var camera: Camera2D
 
 var is_moving = false
 var can_slide = true
@@ -19,11 +20,9 @@ var last_move_direction = Vector2.ZERO
 var current_hits: int = 0
 var is_dead: bool = false
 var shoot_timer: float = 0.0
-var camera: Camera2D
 var face_locked: bool = false
 
 func _ready():
-	camera = get_parent().get_node("Camera2D")
 	if $SlideTime is Timer:
 		$SlideTime.wait_time = slideCooldown
 		$SlideTime.one_shot = true

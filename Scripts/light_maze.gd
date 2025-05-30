@@ -4,6 +4,7 @@ extends Node2D
 @onready var wall_tilemap = $Walls
 @onready var floor_tilemap = $Floor
 
+var enemy_scene = preload("res://Scenes/hidden_enemy.tscn")
 const MAZE_SIZE = Vector2i(80,25)
 const FLOOR_TILES = [Vector2i(1,0), Vector2i(0,0), Vector2i(2,0), Vector2i(1,1)]
 const TERRAIN_SET = 0
@@ -13,13 +14,14 @@ var maze = []
 var visited = []
 var directions = [Vector2i(0, -2), Vector2i(0, 2), Vector2i(-2, 0), Vector2i(2,0)]
 
-var START_POS = Vector2i(1, MAZE_SIZE.y / 2)
-var END_POS = Vector2i(MAZE_SIZE.x - 2, MAZE_SIZE.y / 2)
+var START_POS := Vector2i(1, MAZE_SIZE.y / 2)
+var END_POS := Vector2i(MAZE_SIZE.x - 2, MAZE_SIZE.y / 2)
 
 func _ready():
 	randomize()
 	generate_maze()
 	spawn_player()
+	spawn_enemies()
 
 func generate_maze():
 	maze.clear()
@@ -38,7 +40,6 @@ func generate_maze():
 	
 	wall_tilemap.clear()
 	var wall_positions = []
-	var floor_positions = []
 	for y in range(MAZE_SIZE.y):
 		for x in range(MAZE_SIZE.x):
 			var pos = Vector2i(x,y)
@@ -67,3 +68,17 @@ func is_inside_maze(pos: Vector2i) -> bool:
 func spawn_player():
 	var start_pos = wall_tilemap.map_to_local(START_POS)
 	player.global_position = wall_tilemap.to_global(start_pos)
+
+func spawn_enemies(count: int = 3):
+	var spawned = 0
+	while spawned < count:
+		var x = randi_range(1, MAZE_SIZE.x - 2)
+		var y = randi_range(1, MAZE_SIZE.y - 2)
+		if maze[y][x]:
+			print("Spawning Enemy")
+			var enemy = enemy_scene.instantiate()
+			enemy.player = player
+			enemy.global_position = floor_tilemap.map_to_local(Vector2i(x, y))
+			add_child(enemy)
+			print("Spanwned Enemy")
+			spawned += 1

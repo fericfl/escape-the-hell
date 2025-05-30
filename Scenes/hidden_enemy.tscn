@@ -1,22 +1,44 @@
-[gd_scene load_steps=2 format=3 uid="uid://dyk75r81fimdd"]
+[gd_scene load_steps=5 format=3 uid="uid://dyk75r81fimdd"]
 
 [ext_resource type="Script" uid="uid://d225jf3e8yyvb" path="res://Scripts/hidden_enemy.gd" id="1_e41xn"]
+[ext_resource type="Texture2D" uid="uid://bfxsrs2nl3itc" path="res://Assets/Sprites/Characters/Enemy/chort_idle_anim.png" id="2_q5lws"]
 
-[node name="Hidden_Enemy" type="CharacterBody2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ol07"]
+size = Vector2(10, 13)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_gvqik"]
+size = Vector2(62, 58)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Hidden_Enemy" type="CharacterBody2D" parent="." node_paths=PackedStringArray("animation_player")]
 script = ExtResource("1_e41xn")
+animation_player = NodePath("AnimationPlayer")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="Hidden_Enemy"]
+texture_filter = 1
+texture = ExtResource("2_q5lws")
+hframes = 4
+frame = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy"]
+position = Vector2(0, 4.5)
+shape = SubResource("RectangleShape2D_4ol07")
 
-[node name="RayCast2D" type="RayCast2D" parent="."]
+[node name="RayCast2D" type="RayCast2D" parent="Hidden_Enemy"]
+collide_with_areas = true
 
-[node name="LightOccluder2D" type="LightOccluder2D" parent="."]
+[node name="LightAreaDetectorArea2D" type="Area2D" parent="Hidden_Enemy"]
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy/LightAreaDetectorArea2D"]
+shape = SubResource("RectangleShape2D_gvqik")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="AwarenessArea2D" type="Area2D" parent="Hidden_Enemy"]
+visible = false
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy/AwarenessArea2D"]
+shape = SubResource("RectangleShape2D_gvqik")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Hidden_Enemy"]
+
+[node name="Timer" type="Timer" parent="Hidden_Enemy"]

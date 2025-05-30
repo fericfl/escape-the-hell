@@ -1,10 +1,11 @@
-[gd_scene load_steps=37 format=3 uid="uid://bre7se6reo2ko"]
+[gd_scene load_steps=38 format=3 uid="uid://bre7se6reo2ko"]
 
 [ext_resource type="PackedScene" uid="uid://cfb2i8pmf5k75" path="res://Scenes/player.tscn" id="1_08d5v"]
 [ext_resource type="Script" uid="uid://b1et627qxe20d" path="res://Scripts/light_maze.gd" id="1_sa20h"]
 [ext_resource type="Texture2D" uid="uid://ckafe35ri32ny" path="res://Assets/Sprites/TileMaps/atlas_floor-16x16.png" id="3_3al2v"]
 [ext_resource type="Texture2D" uid="uid://dejbjos7ghuol" path="res://Assets/Sprites/TileMaps/atlas_walls_low-16x16.png" id="4_byea7"]
 [ext_resource type="Texture2D" uid="uid://nkroomecabm5" path="res://Assets/Sprites/TileMaps/atlas_walls_high-16x32.png" id="5_byea7"]
+[ext_resource type="PackedScene" uid="uid://dyk75r81fimdd" path="res://Scenes/hidden_enemy.tscn" id="6_uafjb"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uafjb"]
 texture = ExtResource("3_3al2v")
@@ -524,3 +525,6 @@ tile_set = SubResource("TileSet_byea7")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0.0509804, 0.0509804, 0.0509804, 1)
+
+[node name="Hidden_Enemy" parent="." instance=ExtResource("6_uafjb")]
+z_index = 2

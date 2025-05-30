@@ -1,35 +1,48 @@
+class_name Enemy
 extends CharacterBody2D
 
 @export var move_speed: float = 100
 @export var attack_range: float = 50
 @export var ally_radius: int = 2
-@export var player_path: NodePath = "/root/Scenes/Player"
 @export var animation_player: AnimationPlayer
+@export var spawn_delay: float = 1.0
+@export var player: CharacterBody2D
 
+var spawn_delay_timer: float = 0.0
+var can_start = false
 enum State {IDLE, HIDE, CHASE, ATTACK}
 var state: State = State.IDLE
-
-var player: CharacterBody2D
 var nearby_allies: Array = []
 
 @onready var ray = $RayCast2D
-@onready var awarness_area = $Area2D
+@onready var awarness_area = $AwarenessArea2D
 
 func _ready():
-	player = get_node(player_path)
 	add_to_group("Enemies")
 	awarness_area.body_entered.connect(_on_Area2D_body_entered)
 	awarness_area.body_exited.connect(_on_Area2D_body_exited)
+	spawn_delay_timer = spawn_delay
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	if not can_start:
+		spawn_delay_timer -= delta
+		if spawn_delay_timer <= 0:
+			can_start = true
+		else:
+			return
+	
 	match state:
 		State.IDLE:
+			#print("I am Idle")
 			look_for_player()
 		State.HIDE:
+			print("I am Hiding")
 			hide_behavior()
 		State.CHASE:
+			print("I am Chasing")
 			chase_player()
 		State.ATTACK:
+			print("I am Attacking")
 			attack_player()
 
 func look_for_player():
@@ -64,9 +77,11 @@ func attack_player():
 
 func can_see_player() -> bool:
 	var direction = player.global_position - global_position
+	print(direction)
 	ray.target_position = direction
 	ray.force_raycast_update()
-	
+	if not player:
+		return false
 	if ray.is_colliding():
 		var hit = ray.get_collider()
 		return hit == player
