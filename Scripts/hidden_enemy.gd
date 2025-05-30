@@ -18,6 +18,8 @@ var nearby_allies: Array = []
 func _ready():
 	player = get_node(player_path)
 	add_to_group("Enemies")
+	awarness_area.body_entered.connect(_on_Area2D_body_entered)
+	awarness_area.body_exited.connect(_on_Area2D_body_exited)
 
 func _physics_process(_delta: float) -> void:
 	match state:
@@ -81,5 +83,5 @@ func _on_Area2D_body_entered(body):
 	if body.is_in_group("Enemies"):
 		nearby_allies.append(body)
 		
-func _on_Aread2D_body_exited(body):
+func _on_Area2D_body_exited(body):
 	nearby_allies.erase(body)
