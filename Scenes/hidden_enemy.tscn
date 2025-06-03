@@ -7,9 +7,9 @@
 size = Vector2(10, 13)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gvqik"]
-size = Vector2(62, 58)
+size = Vector2(122, 90)
 
-[node name="Hidden_Enemy" type="CharacterBody2D" node_paths=PackedStringArray("animation_player")]
+[node name="Hidden_Enemy" type="CharacterBody2D" node_paths=PackedStringArray("animation_player") groups=["Enemies"]]
 script = ExtResource("1_e41xn")
 animation_player = NodePath("AnimationPlayer")
 
@@ -31,8 +31,7 @@ collide_with_areas = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LightAreaDetectorArea2D"]
 shape = SubResource("RectangleShape2D_gvqik")
 
-[node name="AwarenessArea2D" type="Area2D" parent="."]
-visible = false
+[node name="AwarenessArea2D" type="Area2D" parent="." groups=["Enemies"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AwarenessArea2D"]
 shape = SubResource("RectangleShape2D_gvqik")

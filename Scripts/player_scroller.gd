@@ -2,12 +2,11 @@ extends CharacterBody2D
 
 signal score_threshold_reached
 
-@export var NORMAL_SPEED = 50
+@export var START_SPEED = 50
 @export var SLOW_SPEED = 15
 @export var lives: int = 3
 @export var JUMP_HEIGHT = 12
 @export var JUMP_DURATION = 0.5 
-@export var score_threshold: int  = 500
 @export var endgame_scene: PackedScene
 @export var animation_player: AnimationPlayer
 @export var sprite: Sprite2D
@@ -15,19 +14,22 @@ signal score_threshold_reached
 @export var SPIKE_TILE = Vector2i(3, 3)
 @onready var shadow = $Shadow
 
+var score_threshold: int  = RunProgress.get_current_score_threshold()
 const LANE_HEIGHT = 32
 const LANES = [96, 144, 192]
 var current_lane = 1
 var is_jumping = false
 var jump_timer = 0.0
 var original_y = 0.0
-var current_speed = NORMAL_SPEED
+var current_speed = START_SPEED
 var did_hit_spike = false
 var target_y: float = 0.0
 var souls = 0
 var score = 0
 var last_x = 0
 var score_threshold_reached_emitted = false
+var speed_increment = 5
+var max_speed = 300
 
 func _ready():
 	position.y = LANES[current_lane]
@@ -46,6 +48,7 @@ func _physics_process(delta: float) -> void:
 		score += moved_distance
 		last_x = int(global_position.x)
 	if score >= score_threshold and not score_threshold_reached_emitted:
+		RunProgress.add_total_souls_collected(souls)
 		emit_signal("score_threshold_reached")
 		score_threshold_reached_emitted = true
 	# Jump logic
@@ -118,8 +121,14 @@ func check_spike_collision():
 				get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		did_hit_spike = false
-		current_speed = NORMAL_SPEED
+		current_speed = START_SPEED
 
-func _on_area_entered(area: Area2D) -> void:
+func _on_area_entered(_area: Area2D) -> void:
+	score += 100
 	souls += 1
 	print("Souls: ", souls)
+
+
+func _on_elapsed_time_timeout() -> void:
+	if current_speed < max_speed:
+		current_speed += speed_increment

@@ -81,3 +81,8 @@ drag_bottom_margin = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Player"]]
 shape = SubResource("RectangleShape2D_l1yfg")
+
+[node name="ElapsedTime" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="ElapsedTime" to="." method="_on_elapsed_time_timeout"]
