@@ -6,7 +6,7 @@ extends Node2D
 
 var next_room = "res://Scenes/boss_room.tscn"
 var enemy_scene = preload("res://Scenes/hidden_enemy.tscn")
-const MAZE_SIZE = Vector2i(25,25)
+const MAZE_SIZE = Vector2i(40,25)
 const FLOOR_TILES = [Vector2i(1,0), Vector2i(0,0), Vector2i(2,0), Vector2i(1,1)]
 const TERRAIN_SET = 0
 const WALL_TERRAIN_ID = 0

@@ -10,6 +10,7 @@ size = Vector2(10, 13)
 size = Vector2(122, 90)
 
 [node name="Hidden_Enemy" type="CharacterBody2D" node_paths=PackedStringArray("animation_player") groups=["Enemies"]]
+collision_layer = 2
 script = ExtResource("1_e41xn")
 animation_player = NodePath("AnimationPlayer")
 
@@ -35,6 +36,7 @@ shape = SubResource("RectangleShape2D_gvqik")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AwarenessArea2D"]
 shape = SubResource("RectangleShape2D_gvqik")
+disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 

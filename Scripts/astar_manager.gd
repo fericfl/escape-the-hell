@@ -15,7 +15,7 @@ func build_from_maze(maze: Array, tilemap: TileMapLayer):
 		for x in range(maze[y].size()):
 			if maze[y][x]:
 				var cell = Vector2i(x,y)
-				var world_pos = tilemap.map_to_local(cell) + Vector2(16,16) / 2
+				var world_pos = tilemap.map_to_local(cell) #+ Vector2(16,16) / 2
 				astar.add_point(point_id, world_pos)
 				pos_to_id[cell] = point_id
 				point_id += 1

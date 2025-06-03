@@ -1,20 +1,22 @@
 class_name Enemy
 extends CharacterBody2D
 
-@export var move_speed: float = 100
+@export var move_speed: float = 50
 @export var attack_range: float = 50
 @export var ally_radius: int = 2
 @export var animation_player: AnimationPlayer
 @export var spawn_delay: float = 1.0
 @export var player: CharacterBody2D
+@export var roam_wait_time := 2.0
 
-
+var distance_threshold = 10
 var spawn_delay_timer: float = 0.0
 var can_start = false
 enum State {IDLE, HIDE, CHASE, ATTACK}
 var state: State = State.IDLE
 var nearby_allies: Array = []
-
+var roam_timer := 0.0
+var is_waiting := false
 var path: Array = []
 var current_path_index := 0
 
@@ -38,7 +40,10 @@ func _physics_process(delta: float) -> void:
 	match state:
 		State.IDLE:
 			#print("I am Idle")
-			look_for_player()
+			if can_see_player():
+				look_for_player()
+			else:
+				roam_randomly(delta)
 		State.HIDE:
 			#print("I am Hiding")
 			hide_behavior()
@@ -49,11 +54,31 @@ func _physics_process(delta: float) -> void:
 			print("I am Attacking")
 			attack_player()
 
+func roam_randomly(delta: float) -> void:
+	if path.is_empty() or current_path_index >= path.size():
+		if not is_waiting:
+			is_waiting = true
+			roam_timer = roam_wait_time
+		else:
+			roam_timer -= delta
+			if roam_timer <= 0:
+				is_waiting = false
+				_pick_random_roam_point()
+	else:
+		var target_point = path[current_path_index]
+		if global_position.distance_to(target_point) < distance_threshold:
+			global_position = target_point
+			current_path_index += 1
+			velocity = Vector2.ZERO
+		else:
+			var dir = (target_point - global_position).normalized()
+			velocity = dir * move_speed
+			move_and_slide()
+
 func look_for_player():
 	if can_see_player():
 		if get_nearby_ally_count() >= ally_radius:
 			state = State.CHASE
-			#animation_player.play("alert")
 		else:
 			state = State.HIDE
 
@@ -63,8 +88,10 @@ func hide_behavior():
 	
 	if current_path_index < path.size():
 		var target_point = path[current_path_index]
-		if global_position.distance_to(target_point) < 4:
+		if global_position.distance_to(target_point) < distance_threshold:
+			global_position = target_point
 			current_path_index += 1
+			velocity = Vector2.ZERO
 		else:
 			var dir = (target_point - global_position).normalized()
 			velocity = dir * move_speed
@@ -76,8 +103,10 @@ func chase_player():
 	
 	if current_path_index < path.size():
 		var target_point = path[current_path_index]
-		if global_position.distance_to(target_point) < 4:
+		if global_position.distance_to(target_point) < distance_threshold:
+			global_position = target_point
 			current_path_index += 1
+			velocity = Vector2.ZERO
 		if current_path_index < path.size():
 			var dir = (target_point - global_position).normalized()
 			velocity = dir * move_speed
@@ -85,6 +114,17 @@ func chase_player():
 	
 	if global_position.distance_to(player.global_position) <= attack_range:
 		state = State.ATTACK
+
+func _pick_random_roam_point():
+	var point_ids = AstarManager.astar.get_point_ids()
+	if point_ids.is_empty():
+		return
+	var start = AstarManager.astar.get_closest_point(global_position)
+	var random_id = point_ids[randi() % point_ids.size()]
+	
+	if AstarManager.astar.has_point(start) and AstarManager.astar.has_point(random_id):
+		path = AstarManager.astar.get_point_path(start, random_id)
+		current_path_index = 0
 
 func _find_path_to_player():
 	var astar = AstarManager.astar
@@ -115,24 +155,21 @@ func _find_hide_path():
 
 func attack_player():
 	velocity = Vector2.ZERO
-	#animation_player.play("attack")
 	
 	if global_position.distance_to(player.global_position) > attack_range:
 		state = State.CHASE
 
 func can_see_player() -> bool:
-	#var direction = player.global_position - global_position
-	#ray.target_position = direction
-	#ray.force_raycast_update()
-	#if not player:
-		#return false
-	#if ray.is_colliding():
-		#var hit = ray.get_collider()
-		#return hit == player
-	#return false
-	var start = AstarManager.astar.get_closest_point(global_position)
-	var end = AstarManager.astar.get_closest_point(player.global_position)
-	return start == end or AstarManager.astar.has_point(end)
+	if not player:
+		return false
+	var direction = player.global_position - global_position
+	ray.target_position = direction
+	ray.force_raycast_update()
+	
+	if ray.is_colliding():
+		var hit = ray.get_collider()
+		return hit == player
+	return false
 
 func get_nearby_ally_count() -> int:
 	var count = 0
@@ -144,8 +181,10 @@ func get_nearby_ally_count() -> int:
 func _on_Area2D_body_entered(body):
 	if body.is_in_group("Enemies"):
 		nearby_allies.append(body)
+		$CollisionShape2D.disabled = true
 		print("I found a friend! ", nearby_allies.size())
 		
 		
 func _on_Area2D_body_exited(body):
+	$CollisionShape2D.disabled = false
 	nearby_allies.erase(body)
