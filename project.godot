@@ -17,13 +17,14 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DiscordRPCLoader="*res://addons/discord-rpc-gd/nodes/discord_autoload.gd"
+RunProgress="*res://Scripts/run_progress.gd"
+AstarManager="*res://Scripts/astar_manager.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/stretch/aspect="expand"
+window/size/mode=2
 
 [editor_plugins]
 

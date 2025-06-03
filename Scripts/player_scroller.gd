@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal score_threshold_reached
+
 @export var NORMAL_SPEED = 50
 @export var SLOW_SPEED = 15
 @export var lives: int = 3
@@ -7,7 +9,6 @@ extends CharacterBody2D
 @export var JUMP_DURATION = 0.5 
 @export var score_threshold: int  = 500
 @export var endgame_scene: PackedScene
-@export var boss_room: PackedScene
 @export var animation_player: AnimationPlayer
 @export var sprite: Sprite2D
 @export var tilemap: TileMapLayer
@@ -26,10 +27,12 @@ var target_y: float = 0.0
 var souls = 0
 var score = 0
 var last_x = 0
+var score_threshold_reached_emitted = false
 
 func _ready():
 	position.y = LANES[current_lane]
 	target_y = position.y
+	$Area2D.connect("area_entered", Callable(self, "_on_area_entered"))
 
 
 func _physics_process(delta: float) -> void:
@@ -42,9 +45,9 @@ func _physics_process(delta: float) -> void:
 	if moved_distance > 0:
 		score += moved_distance
 		last_x = int(global_position.x)
-	if score >= score_threshold:
-		get_tree().change_scene_to_packed(boss_room)
-	
+	if score >= score_threshold and not score_threshold_reached_emitted:
+		emit_signal("score_threshold_reached")
+		score_threshold_reached_emitted = true
 	# Jump logic
 	if is_jumping:
 		jump_timer -= delta
@@ -117,7 +120,6 @@ func check_spike_collision():
 		did_hit_spike = false
 		current_speed = NORMAL_SPEED
 
-
-func on_soul_collected():
+func _on_area_entered(area: Area2D) -> void:
 	souls += 1
 	print("Souls: ", souls)

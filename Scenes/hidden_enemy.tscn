@@ -9,36 +9,34 @@ size = Vector2(10, 13)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gvqik"]
 size = Vector2(62, 58)
 
-[node name="Node2D" type="Node2D"]
-
-[node name="Hidden_Enemy" type="CharacterBody2D" parent="." node_paths=PackedStringArray("animation_player")]
+[node name="Hidden_Enemy" type="CharacterBody2D" node_paths=PackedStringArray("animation_player")]
 script = ExtResource("1_e41xn")
 animation_player = NodePath("AnimationPlayer")
 
-[node name="Sprite2D" type="Sprite2D" parent="Hidden_Enemy"]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 texture = ExtResource("2_q5lws")
 hframes = 4
 frame = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4.5)
 shape = SubResource("RectangleShape2D_4ol07")
 
-[node name="RayCast2D" type="RayCast2D" parent="Hidden_Enemy"]
+[node name="RayCast2D" type="RayCast2D" parent="."]
 collide_with_areas = true
 
-[node name="LightAreaDetectorArea2D" type="Area2D" parent="Hidden_Enemy"]
+[node name="LightAreaDetectorArea2D" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy/LightAreaDetectorArea2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAreaDetectorArea2D"]
 shape = SubResource("RectangleShape2D_gvqik")
 
-[node name="AwarenessArea2D" type="Area2D" parent="Hidden_Enemy"]
+[node name="AwarenessArea2D" type="Area2D" parent="."]
 visible = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hidden_Enemy/AwarenessArea2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AwarenessArea2D"]
 shape = SubResource("RectangleShape2D_gvqik")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Hidden_Enemy"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 
-[node name="Timer" type="Timer" parent="Hidden_Enemy"]
+[node name="Timer" type="Timer" parent="."]

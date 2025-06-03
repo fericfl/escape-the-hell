@@ -526,5 +526,6 @@ tile_set = SubResource("TileSet_byea7")
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 color = Color(0.0509804, 0.0509804, 0.0509804, 1)
 
-[node name="Hidden_Enemy" parent="." instance=ExtResource("6_uafjb")]
+[node name="Hidden_Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_uafjb")]
 z_index = 2
+player = NodePath("../Player")

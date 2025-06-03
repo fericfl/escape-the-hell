@@ -4,6 +4,7 @@ extends Node2D
 @onready var wall_tilemap = $Walls
 @onready var floor_tilemap = $Floor
 
+var next_room = "res://Scenes/boss_room.tscn"
 var enemy_scene = preload("res://Scenes/hidden_enemy.tscn")
 const MAZE_SIZE = Vector2i(80,25)
 const FLOOR_TILES = [Vector2i(1,0), Vector2i(0,0), Vector2i(2,0), Vector2i(1,1)]
@@ -16,6 +17,9 @@ var directions = [Vector2i(0, -2), Vector2i(0, 2), Vector2i(-2, 0), Vector2i(2,0
 
 var START_POS := Vector2i(1, MAZE_SIZE.y / 2)
 var END_POS := Vector2i(MAZE_SIZE.x - 2, MAZE_SIZE.y / 2)
+
+func _physics_process(_delta: float) -> void:
+	check_player_on_end_tile()
 
 func _ready():
 	randomize()
@@ -82,3 +86,10 @@ func spawn_enemies(count: int = 3):
 			add_child(enemy)
 			print("Spanwned Enemy")
 			spawned += 1
+
+func check_player_on_end_tile():
+	var player_local_pos = floor_tilemap.to_local(player.global_position)
+	var player_tile_pos = floor_tilemap.local_to_map(player_local_pos)
+	
+	if player_tile_pos == END_POS:
+		get_tree().change_scene_to_file(next_room)

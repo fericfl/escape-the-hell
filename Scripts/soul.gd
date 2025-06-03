@@ -2,12 +2,8 @@ extends Area2D
 
 signal collected
 
-func _read():
-	print("I connected to signal")
-	connect("body_entered", Callable(self, "_on_body_entered"))
-
-func _on_body_entered(body):
+func _on_area_entered(area):
 	print("I am here")
-	if body.is_in_group("Player"):
-		collected.emit("collected")
+	if area.is_in_group("Player"):
+		emit_signal("collected")
 		queue_free()

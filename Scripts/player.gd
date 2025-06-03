@@ -22,7 +22,10 @@ var is_dead: bool = false
 var shoot_timer: float = 0.0
 var face_locked: bool = false
 
+
 func _ready():
+	await get_tree().process_frame
+	var is_in_boss_room = get_tree().current_scene
 	if $SlideTime is Timer:
 		$SlideTime.wait_time = slideCooldown
 		$SlideTime.one_shot = true
@@ -32,6 +35,8 @@ func _ready():
 		$FaceLockTime.one_shot = true
 	else:
 		push_error("SlideTime node is missing or not a Timer!")
+	if is_in_boss_room.scene_file_path.ends_with("boss_room.tscn"):
+		$PointLight2D.enabled = !$PointLight2D.enabled
 
 func _physics_process(_delta):
 	var input_dir = Vector2.ZERO
@@ -55,7 +60,7 @@ func _physics_process(_delta):
 	
 	input_dir = input_dir.normalized()
 	is_moving = input_dir != Vector2.ZERO
-
+		
 	if is_moving:
 		if not face_locked:
 			if velocity.x != 0:
@@ -95,7 +100,7 @@ func die():
 	
 	queue_free()
 	if endgame_scene != null:
-		#get_tree().quit()
+		get_tree().quit()
 		get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		push_error("Endgame Scene not assigned!")

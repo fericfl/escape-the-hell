@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=4 uid="uid://cn5vtchjcnkkt"]
+[gd_scene load_steps=12 format=4 uid="uid://cn5vtchjcnkkt"]
 
 [ext_resource type="Texture2D" uid="uid://ckafe35ri32ny" path="res://Assets/Sprites/TileMaps/atlas_floor-16x16.png" id="1_q1u03"]
 [ext_resource type="Texture2D" uid="uid://dejbjos7ghuol" path="res://Assets/Sprites/TileMaps/atlas_walls_low-16x16.png" id="2_2yuk5"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://sh4hnbdaxm0j" path="res://Scenes/game_manager.tscn" id="4_ioilu"]
 [ext_resource type="PackedScene" uid="uid://cr17uii3iawqj" path="res://Scenes/endgame_scene.tscn" id="4_uxagy"]
 [ext_resource type="PackedScene" uid="uid://b2x6pjeh2mawp" path="res://Scenes/soul.tscn" id="5_kgx5n"]
-[ext_resource type="PackedScene" uid="uid://cspwlvc8phxbg" path="res://Scenes/boss_room.tscn" id="5_n41at"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_uxagy"]
 texture = ExtResource("2_2yuk5")
@@ -180,15 +179,15 @@ tile_set = SubResource("TileSet_ioilu")
 [node name="PlayerScroller" parent="." node_paths=PackedStringArray("tilemap") instance=ExtResource("2_q1u03")]
 position = Vector2(7, 141)
 endgame_scene = ExtResource("4_uxagy")
-boss_room = ExtResource("5_n41at")
 tilemap = NodePath("../Ground")
 
 [node name="GameManager" parent="." node_paths=PackedStringArray("tilemap", "player") groups=["Player"] instance=ExtResource("4_ioilu")]
 tilemap = NodePath("../Ground")
 player = NodePath("../PlayerScroller")
-soul_scene = ExtResource("5_kgx5n")
 SPIKE_SPAWN_CHANCE = 50
 
 [node name="Soul" parent="." instance=ExtResource("5_kgx5n")]
 
-[connection signal="collected" from="Soul" to="PlayerScroller" method="on_soul_collected"]
+[connection signal="score_threshold_reached" from="PlayerScroller" to="GameManager" method="_on_score_threshold_reached"]
+[connection signal="body_entered" from="Soul" to="Soul" method="_on_body_entered"]
+[connection signal="collected" from="Soul" to="PlayerScroller" method="_on_soul_collected"]

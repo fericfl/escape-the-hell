@@ -36,7 +36,7 @@ func _physics_process(delta: float) -> void:
 			#print("I am Idle")
 			look_for_player()
 		State.HIDE:
-			print("I am Hiding")
+			#print("I am Hiding")
 			hide_behavior()
 		State.CHASE:
 			print("I am Chasing")
@@ -49,7 +49,7 @@ func look_for_player():
 	if can_see_player():
 		if get_nearby_ally_count() >= ally_radius:
 			state = State.CHASE
-			animation_player.play("alert")
+			#animation_player.play("alert")
 		else:
 			state = State.HIDE
 
@@ -57,27 +57,26 @@ func hide_behavior():
 	var dir = (global_position - player.global_position).normalized()
 	velocity = dir * move_speed
 	move_and_slide()
-	animation_player.play("hide")
+	#animation_player.play("hide")
 
 func chase_player():
 	var dir = (player.global_position - global_position).normalized()
 	velocity = dir * move_speed
 	move_and_slide()
-	animation_player.play("run")
+	#animation_player.play("run")
 	
 	if global_position.distance_to(player.global_position) <= attack_range:
 		state = State.ATTACK
 
 func attack_player():
 	velocity = Vector2.ZERO
-	animation_player.play("attack")
+	#animation_player.play("attack")
 	
 	if global_position.distance_to(player.global_position) > attack_range:
 		state = State.CHASE
 
 func can_see_player() -> bool:
 	var direction = player.global_position - global_position
-	print(direction)
 	ray.target_position = direction
 	ray.force_raycast_update()
 	if not player:
