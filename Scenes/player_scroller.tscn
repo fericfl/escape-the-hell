@@ -50,7 +50,7 @@ script = ExtResource("1_l1yfg")
 animation_player = NodePath("AnimationPlayer")
 sprite = NodePath("Sprite2D")
 
-[node name="Shadow" type="Sprite2D" parent="."]
+[node name="Shadow" type="Sprite2D" parent="." groups=["Player"]]
 modulate = Color(0, 0, 0, 0.4)
 visibility_layer = 2
 texture_filter = 1
@@ -60,13 +60,10 @@ texture = ExtResource("3_ta1tj")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(-8, -8)
 texture = ExtResource("1_6mbfx")
-centered = false
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, 1)
 shape = SubResource("RectangleShape2D_l1yfg")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -79,3 +76,8 @@ zoom = Vector2(5, 5)
 drag_vertical_enabled = true
 drag_top_margin = 1.0
 drag_bottom_margin = 1.0
+
+[node name="Area2D" type="Area2D" parent="." groups=["Player"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Player"]]
+shape = SubResource("RectangleShape2D_l1yfg")

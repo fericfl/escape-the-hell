@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://cerlkoa853f5c"]
-
-[node name="Node2D" type="ParallaxBackground"]
-
-[node name="Sprite2D" type="Sprite2D" parent="."]
-
-[node name="ParallaxLayer" type="ParallaxLayer" parent="."]

@@ -2,9 +2,10 @@ extends Node2D
 
 @export var tilemap: TileMapLayer
 @export var player: CharacterBody2D
-@export var soul_scene: PackedScene
 @export var SPAWN_DELAY_TILES = 5
 @export var SPIKE_SPAWN_CHANCE = 30
+
+var soul_scene = preload("res://Scenes/soul.tscn")
 
 const LAYER = 0
 const GROUND_TILE = Vector2i(0, 0)
@@ -19,6 +20,8 @@ const GROUND_Y_POSITIONS = [7, 10, 13]
 const GENERATE_DISTANCE = 40
 var last_generated_x = 0
 
+func _ready():
+	player.connect("score_threshold_reached", self._on_score_threshold_reached)
 
 func _process(_delta):
 	var player_local_pos = tilemap.to_local(player.global_position)
@@ -83,5 +86,9 @@ func generate_column(x: int) -> void:
 				
 				var soul = soul_scene.instantiate()
 				soul.global_position = soul_pixel_pos
-				soul.connect("collected", Callable(player, "on_soul_collected"))
+				soul.connect("collected", Callable(player, "_on_soul_collected"))
+				soul.connect("area_entered", Callable(soul, "_on_area_entered"))
 				add_child(soul)
+
+func _on_score_threshold_reached():
+	get_tree().change_scene_to_file("res://Scenes/light_maze.tscn")

@@ -7,11 +7,9 @@
 size = Vector2(12, 12)
 
 [node name="Soul" type="Area2D" groups=["Player"]]
-collision_layer = 2
 script = ExtResource("1_jrtix")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-light_mask = 2
 shape = SubResource("RectangleShape2D_dmpwr")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

@@ -1,12 +1,14 @@
 extends CharacterBody2D
 
+signal boss_defeated
+
 @export var move_speed = 10
 @export var shoot_cooldown: float = 1.5
 @export var bullet_scene: PackedScene
-@export var infinite_run = "res://Scenes/infinite_run.tscn"
 @export var max_hits: int = 5
 @export var animation_player: AnimationPlayer
 
+var next_scene = preload("res://Scenes/infinite_run.tscn")
 var player: CharacterBody2D = null
 var shoot_timer: float = 0.0
 var current_hits: int = 0
@@ -49,8 +51,8 @@ func die():
 	is_dead = true
 	print("Boss defeated!")
 	
+	emit_signal("boss_defeated")
 	queue_free()
-	get_tree().change_scene_to_file(infinite_run)
 	
 
 func shoot_at_player():
