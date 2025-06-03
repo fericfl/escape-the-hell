@@ -97,7 +97,7 @@ one_shot = true
 [node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(2, 2)
+zoom = Vector2(5, 5)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -100,7 +100,6 @@ func die():
 	
 	queue_free()
 	if endgame_scene != null:
-		get_tree().quit()
 		get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		push_error("Endgame Scene not assigned!")

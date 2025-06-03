@@ -524,7 +524,6 @@ texture_filter = 1
 tile_set = SubResource("TileSet_byea7")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0.0509804, 0.0509804, 0.0509804, 1)
 
 [node name="Hidden_Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_uafjb")]

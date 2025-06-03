@@ -132,3 +132,4 @@ func _on_area_entered(_area: Area2D) -> void:
 func _on_elapsed_time_timeout() -> void:
 	if current_speed < max_speed:
 		current_speed += speed_increment
+		START_SPEED = current_speed
