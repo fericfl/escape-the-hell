@@ -20,9 +20,6 @@ const GROUND_Y_POSITIONS = [7, 10, 13]
 const GENERATE_DISTANCE = 40
 var last_generated_x = 0
 
-func _ready():
-	player.connect("score_threshold_reached", self._on_score_threshold_reached)
-
 func _process(_delta):
 	var player_local_pos = tilemap.to_local(player.global_position)
 	var player_x_tile = tilemap.local_to_map(player_local_pos).x
@@ -91,4 +88,5 @@ func generate_column(x: int) -> void:
 				add_child(soul)
 
 func _on_score_threshold_reached():
+	player.set_player_health()
 	get_tree().change_scene_to_file("res://Scenes/light_maze.tscn")

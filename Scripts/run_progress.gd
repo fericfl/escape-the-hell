@@ -6,8 +6,8 @@ var souls_collected := 0
 var rounds_completed := 0
 var time_between_shots_boss: float = 1.5
 var total_rounds_fired_boss := 1
-var player_health := 3
-
+var max_player_health := 3
+var current_player_health = max_player_health
 func get_current_total_rounds_fired_boss() -> int:
 	return total_rounds_fired_boss + (rounds_completed * 2)
 
@@ -25,3 +25,16 @@ func get_total_souls_collected() -> int:
 
 func add_total_souls_collected(collected_souls: int) -> void:
 	souls_collected += collected_souls
+
+func set_current_player_health(current_health: int):
+	current_player_health = current_health
+
+func get_current_player_health() -> int:
+	return current_player_health
+
+func get_max_player_health() -> int:
+	return max_player_health
+
+func set_player_health(new_health: int):
+	max_player_health += new_health
+	current_player_health += new_health

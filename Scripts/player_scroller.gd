@@ -4,7 +4,8 @@ signal score_threshold_reached
 
 @export var START_SPEED = 50
 @export var SLOW_SPEED = 15
-@export var lives: int = 3
+var max_health = RunProgress.get_max_player_health()
+var current_health = RunProgress.get_current_player_health()
 @export var JUMP_HEIGHT = 12
 @export var JUMP_DURATION = 0.5 
 @export var endgame_scene: PackedScene
@@ -115,9 +116,9 @@ func check_spike_collision():
 	if tile == SPIKE_TILE:
 		if not did_hit_spike:
 			did_hit_spike = true
-			lives -= 1
+			current_health -= 1
 			current_speed = SLOW_SPEED
-			if lives <= 0:
+			if current_health <= 0:
 				get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		did_hit_spike = false
@@ -128,6 +129,8 @@ func _on_area_entered(_area: Area2D) -> void:
 	souls += 1
 	print("Souls: ", souls)
 
+func set_player_health():
+	RunProgress.set_current_player_health(current_health)
 
 func _on_elapsed_time_timeout() -> void:
 	if current_speed < max_speed:

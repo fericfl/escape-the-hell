@@ -4,7 +4,8 @@ extends CharacterBody2D
 @export var slideCooldown = 1.0 # seconds
 @export var slideSpeed = 3.0 # multiplier
 @export var slideDuration = 10 # in frames
-@export var max_hits: int = 3
+var max_health = RunProgress.get_max_player_health()
+var current_health = RunProgress.get_current_player_health() 
 @export var endgame_scene: PackedScene
 @export var bullet_scene: PackedScene
 @export var shoot_cooldown: float = 0.5
@@ -35,6 +36,8 @@ func _ready():
 		$FaceLockTime.one_shot = true
 	else:
 		push_error("SlideTime node is missing or not a Timer!")
+	if is_in_boss_room.scene_file_path.ends_with("light_maze.tscn"):
+		$Shadow.visible = !$Shadow.visible
 	if is_in_boss_room.scene_file_path.ends_with("boss_room.tscn"):
 		$PointLight2D.enabled = !$PointLight2D.enabled
 
@@ -65,6 +68,7 @@ func _physics_process(_delta):
 		if not face_locked:
 			if velocity.x != 0:
 				$Sprite2D.flip_h = velocity.x < 0
+				$Shadow.flip_h = velocity.x < 0
 		animation_player.play("walk")
 	else:
 		animation_player.play("idle")
@@ -89,9 +93,9 @@ func take_damage():
 		return
 	
 	current_hits += 1
-	print("Player hit! Hits:", current_hits, "/", max_hits)
+	print("Player hit! Hits:", current_hits, "/", current_health)
 	
-	if current_hits >= max_hits:
+	if current_hits >= current_health:
 		die()
 
 func die():
@@ -121,6 +125,10 @@ func shoot():
 	$Sprite2D.flip_h = direction_to_mouse.x < 0
 	face_locked = true
 	$FaceLockTime.start()
+
+func set_player_health():
+	var new_health = max_health - current_hits;
+	RunProgress.set_current_player_health(new_health)
 
 func _on_slide_time_timeout() -> void:
 	print("Slide is ready")

@@ -72,6 +72,7 @@ animation_player = NodePath("AnimationPlayer")
 camera = NodePath("Camera2D")
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
+light_mask = 7
 position = Vector2(0, -6)
 range_z_min = -300
 range_z_max = 300
@@ -81,8 +82,17 @@ texture = ExtResource("4_fkybt")
 texture_scale = 0.2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
 texture_filter = 1
 position = Vector2(-1.19209e-07, -8)
+texture = ExtResource("3_6t5aa")
+hframes = 4
+
+[node name="Shadow" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+texture_filter = 1
+position = Vector2(0, 4)
+scale = Vector2(1, -1)
 texture = ExtResource("3_6t5aa")
 hframes = 4
 
