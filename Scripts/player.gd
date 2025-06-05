@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 @export var moveSpeed = 300
 @export var slideCooldown = 1.0 # seconds
-@export var slideSpeed = 3.0 # multiplier
+@export var slideSpeed = 2.0 # multiplier
 @export var slideDuration = 10 # in frames
 var max_health = RunProgress.get_max_player_health()
 var current_health = RunProgress.get_current_player_health() 
@@ -18,14 +18,14 @@ var is_sliding = false
 var slideFrames = 0
 var slide_direction = Vector2.ZERO
 var last_move_direction = Vector2.ZERO
-var current_hits: int = 0
 var is_dead: bool = false
 var shoot_timer: float = 0.0
 var face_locked: bool = false
-
+var ready_to_move = false
 
 func _ready():
 	await get_tree().process_frame
+	ready_to_move = true
 	var is_in_boss_room = get_tree().current_scene
 	if $SlideTime is Timer:
 		$SlideTime.wait_time = slideCooldown
@@ -39,9 +39,12 @@ func _ready():
 	if is_in_boss_room.scene_file_path.ends_with("light_maze.tscn"):
 		$Shadow.visible = !$Shadow.visible
 	if is_in_boss_room.scene_file_path.ends_with("boss_room.tscn"):
-		$PointLight2D.enabled = !$PointLight2D.enabled
+		$CloseLight.enabled = !$CloseLight.enabled
+		$FarLight.enabled = !$FarLight.enabled
 
 func _physics_process(_delta):
+	if not ready_to_move:
+		return
 	var input_dir = Vector2.ZERO
 	
 	if Input.is_action_pressed("move_left"):
@@ -53,7 +56,8 @@ func _physics_process(_delta):
 	if Input.is_action_pressed("move_down"):
 		input_dir.y += 1
 	
-	if Input.is_action_just_pressed("slide") and can_slide and last_move_direction != Vector2.ZERO:
+	if Input.is_action_just_pressed("slide") and can_slide  and last_move_direction != Vector2.ZERO:
+		print("Slide input triggered")
 		can_slide = false
 		is_sliding = true
 		slideFrames = slideDuration
@@ -65,6 +69,7 @@ func _physics_process(_delta):
 	is_moving = input_dir != Vector2.ZERO
 		
 	if is_moving:
+		last_move_direction = input_dir
 		if not face_locked:
 			if velocity.x != 0:
 				$Sprite2D.flip_h = velocity.x < 0
@@ -92,10 +97,10 @@ func take_damage():
 	if is_dead:
 		return
 	
-	current_hits += 1
-	print("Player hit! Hits:", current_hits, "/", current_health)
+	current_health -= 1
+	RunProgress.set_current_player_health(current_health)
 	
-	if current_hits >= current_health:
+	if current_health <= 0:
 		die()
 
 func die():
@@ -125,10 +130,6 @@ func shoot():
 	$Sprite2D.flip_h = direction_to_mouse.x < 0
 	face_locked = true
 	$FaceLockTime.start()
-
-func set_player_health():
-	var new_health = max_health - current_hits;
-	RunProgress.set_current_player_health(new_health)
 
 func _on_slide_time_timeout() -> void:
 	print("Slide is ready")

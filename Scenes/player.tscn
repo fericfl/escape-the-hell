@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://rnt43agm27qu" path="res://Assets/Sprites/circle.png" id="4_fkybt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(10, 14)
+size = Vector2(9, 8)
 
 [sub_resource type="Animation" id="Animation_x3wgy"]
 length = 0.001
@@ -71,7 +71,18 @@ bullet_scene = ExtResource("2_6t5aa")
 animation_player = NodePath("AnimationPlayer")
 camera = NodePath("Camera2D")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="FarLight" type="PointLight2D" parent="."]
+light_mask = 7
+position = Vector2(0, -12)
+color = Color(0.336607, 0.336608, 0.336607, 1)
+range_z_min = -300
+range_z_max = 300
+range_item_cull_mask = 3
+shadow_filter = 2
+texture = ExtResource("4_fkybt")
+texture_scale = 0.4
+
+[node name="CloseLight" type="PointLight2D" parent="."]
 light_mask = 7
 position = Vector2(0, -6)
 range_z_min = -300
@@ -97,7 +108,7 @@ texture = ExtResource("3_6t5aa")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, -6)
+position = Vector2(0.5, -6)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="SlideTime" type="Timer" parent="."]

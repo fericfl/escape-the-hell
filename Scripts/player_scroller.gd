@@ -4,8 +4,6 @@ signal score_threshold_reached
 
 @export var START_SPEED = 50
 @export var SLOW_SPEED = 15
-var max_health = RunProgress.get_max_player_health()
-var current_health = RunProgress.get_current_player_health()
 @export var JUMP_HEIGHT = 12
 @export var JUMP_DURATION = 0.5 
 @export var endgame_scene: PackedScene
@@ -15,7 +13,10 @@ var current_health = RunProgress.get_current_player_health()
 @export var SPIKE_TILE = Vector2i(3, 3)
 @onready var shadow = $Shadow
 
+var max_health = RunProgress.get_max_player_health()
+var current_health = RunProgress.get_current_player_health()
 var score_threshold: int  = RunProgress.get_current_score_threshold()
+
 const LANE_HEIGHT = 32
 const LANES = [96, 144, 192]
 var current_lane = 1
@@ -31,14 +32,19 @@ var last_x = 0
 var score_threshold_reached_emitted = false
 var speed_increment = 5
 var max_speed = 300
+var ready_to_move = false
 
 func _ready():
+	await get_tree().process_frame
+	ready_to_move = true
 	position.y = LANES[current_lane]
 	target_y = position.y
 	$Area2D.connect("area_entered", Callable(self, "_on_area_entered"))
 
 
 func _physics_process(delta: float) -> void:
+	if not ready_to_move:
+		return
 	global_position.y = lerp(global_position.y, target_y, 8 * delta)
 	velocity.x = current_speed
 	velocity.y = 0
@@ -117,6 +123,7 @@ func check_spike_collision():
 		if not did_hit_spike:
 			did_hit_spike = true
 			current_health -= 1
+			RunProgress.set_current_player_health(current_health)
 			current_speed = SLOW_SPEED
 			if current_health <= 0:
 				get_tree().change_scene_to_packed(endgame_scene)

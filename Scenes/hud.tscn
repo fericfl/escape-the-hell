@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://0sdaorwl6hpq"]
+
+[ext_resource type="Script" uid="uid://dofy7t22wrvwh" path="res://Scripts/hud.gd" id="1_e0onf"]
+[ext_resource type="Texture2D" uid="uid://b4wqqnj2m1aqd" path="res://Assets/Sprites/HUD/heart_sprite.png" id="2_bjfho"]
+[ext_resource type="Texture2D" uid="uid://dbporqfehfcpy" path="res://Assets/Sprites/HUD/broken_heart_sprite.png" id="3_6fbih"]
+
+[node name="HUD" type="Control"]
+texture_filter = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e0onf")
+full_heart_texture = ExtResource("2_bjfho")
+empty_heart_texture = ExtResource("3_6fbih")
+
+[node name="HeartContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.01
+anchor_top = 0.019
+anchor_right = 0.089
+anchor_bottom = 0.069
+offset_left = -3.2
+offset_top = -4.52
+offset_right = 17.12
+offset_bottom = 12.48
