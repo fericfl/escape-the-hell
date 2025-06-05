@@ -7,10 +7,18 @@ var max_health = RunProgress.get_max_player_health()
 var current_health = RunProgress.get_current_player_health()
 
 @onready var heart_container = $HeartContainer
+@onready var SoulsText = $SoulsScoreContainer/Souls
+@onready var ScoreText = $SoulsScoreContainer/Score
 
 func _ready():
 	RunProgress.HUD = self
 	update_hearts()
+	
+	RunProgress.connect("score_changed", self.update_score)
+	RunProgress.connect("souls_changed", self.update_souls)
+	
+	update_score(RunProgress.get_score())
+	update_souls(RunProgress.get_total_souls_collected())
 
 func set_current_health(new_health: int):
 	current_health = new_health
@@ -29,3 +37,11 @@ func update_hearts():
 		heart.texture = full_heart_texture if i < current_health else empty_heart_texture
 		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		heart_container.add_child(heart)
+
+func update_souls(souls):
+	SoulsText.clear()
+	SoulsText.append_text("Souls: %d" % souls)
+
+func update_score(new_score):
+	ScoreText.clear()
+	ScoreText.append_text("Score: %d | " % new_score)

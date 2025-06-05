@@ -61,17 +61,28 @@ func _physics_process(delta: float) -> void:
 		State.HIDE:
 			hide_behavior()
 		State.WAIT_FOR_ALLY:
-			velocity = Vector2.ZERO
 			wait_timer -= delta
+			
+			if is_in_shadow():
+				if player.global_position.distance_to(last_player_pos) > path_update_distance_threshold or path.is_empty() or current_path_index >= path.size():
+					last_player_pos = player.global_position
+					_find_path_to(last_player_pos)
+				_move_along_path()
+			else:
+				velocity = Vector2.ZERO
+				move_and_slide()
 			if get_nearby_ally_count() >= ally_radius:
 				state = State.CHASE
 			elif wait_timer <= 0:
 				state = State.HIDE
+				_find_furthest_hide_point()
 		State.CHASE:
+			print("Chasing player")
 			chase_player()
 			if global_position.distance_to(player.global_position) <= attack_range:
 				state = State.ATTACK
 		State.ATTACK:
+			print("Attacking Player")
 			attack_player()
 
 func roam_randomly(delta: float) -> void:
@@ -107,8 +118,14 @@ func chase_player():
 
 	_move_along_path()
 
-	if global_position.distance_to(player.global_position) <= attack_range:
-		state = State.ATTACK
+	if not can_see_player():
+		var dist_to_last_pos = global_position.distance_to(last_player_pos)
+		if dist_to_last_pos < attack_range * 2:
+			state = State.IDLE
+		
+		else:
+			if global_position.distance_to(player.global_position) <= attack_range:
+				state = State.ATTACK
 
 
 func attack_player():
@@ -121,7 +138,7 @@ func can_see_player() -> bool:
 	if not player:
 		return false
 	var direction = player.global_position - global_position
-	ray.target_position = direction
+	ray.target_position = direction.normalized() * max(attack_range, 10)
 	ray.force_raycast_update()
 
 	if ray.is_colliding():
@@ -129,7 +146,6 @@ func can_see_player() -> bool:
 	return false
 
 func is_in_shadow() -> bool:
-	print("Am I in shadow?")
 	for body in light_area.get_overlapping_areas():
 		if body is PointLight2D:
 			return false
@@ -145,6 +161,7 @@ func get_nearby_ally_count() -> int:
 func _move_along_path():
 	if current_path_index >= path.size():
 		velocity = Vector2.ZERO
+		move_and_slide()
 		return
 	
 	var target = path[current_path_index]
@@ -156,6 +173,7 @@ func _move_along_path():
 		var dir = (target - global_position).normalized()
 		velocity = dir * move_speed
 	move_and_slide()
+
 func _pick_random_roam_point():
 	var point_ids = AstarManager.astar.get_point_ids()
 	if point_ids.is_empty():
@@ -190,7 +208,7 @@ func _find_furthest_hide_point():
 	var max_distance = -1.0
 
 	for point_id in astar.get_point_ids():
-		var dist = astar.get_point_position(point_id).direction_to(player.global_position)
+		var dist = astar.get_point_position(point_id).distance_to(player.global_position)
 		if dist > max_distance:
 			max_distance = dist
 			furthest_point = point_id

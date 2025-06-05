@@ -53,9 +53,10 @@ func _physics_process(delta: float) -> void:
 	var moved_distance = int(global_position.x - last_x)
 	if moved_distance > 0:
 		score += moved_distance
+		RunProgress.set_score(score)
 		last_x = int(global_position.x)
 	if score >= score_threshold and not score_threshold_reached_emitted:
-		RunProgress.add_total_souls_collected(souls)
+		RunProgress.set_total_souls_collected(souls)
 		emit_signal("score_threshold_reached")
 		score_threshold_reached_emitted = true
 	# Jump logic
@@ -112,6 +113,7 @@ func start_jump():
 
 
 func check_spike_collision():
+	
 	if is_jumping:
 		did_hit_spike = false
 		return
@@ -128,12 +130,16 @@ func check_spike_collision():
 			if current_health <= 0:
 				get_tree().change_scene_to_packed(endgame_scene)
 	else:
-		did_hit_spike = false
-		current_speed = START_SPEED
+		if did_hit_spike:
+			print("Current speed is:", START_SPEED)
+			did_hit_spike = false
+			current_speed = START_SPEED
 
 func _on_area_entered(_area: Area2D) -> void:
 	score += 100
 	souls += 1
+	RunProgress.set_total_souls_collected(1)
+	RunProgress.set_score(score)
 	print("Souls: ", souls)
 
 func set_player_health():

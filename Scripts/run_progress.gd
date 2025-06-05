@@ -1,5 +1,8 @@
 extends Node
 
+signal score_changed(new_score)
+signal souls_changed(new_souls)
+
 var HUD = preload("res://Scenes/hud.tscn")
 var base_score_threshold := 1000
 var base_boss_hits := 100
@@ -9,6 +12,15 @@ var time_between_shots_boss: float = 1.5
 var total_rounds_fired_boss := 1
 var max_player_health := 3
 var current_player_health = max_player_health
+var score = 0
+
+func set_score(new_score: int):
+	score = new_score
+	emit_signal("score_changed", score)
+
+func get_score() -> int:
+	return score
+	
 
 func get_current_total_rounds_fired_boss() -> int:
 	return total_rounds_fired_boss + (rounds_completed * 2)
@@ -25,8 +37,9 @@ func get_current_boss_hits() -> int:
 func get_total_souls_collected() -> int:
 	return souls_collected
 
-func add_total_souls_collected(collected_souls: int) -> void:
+func set_total_souls_collected(collected_souls: int) -> void:
 	souls_collected += collected_souls
+	emit_signal("souls_changed", souls_collected)
 
 func set_current_player_health(current_health: int):
 	current_player_health = current_health
