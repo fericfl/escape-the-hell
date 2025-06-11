@@ -80,12 +80,10 @@ func spawn_enemies(count: int = 3):
 		var x = randi_range(1, MAZE_SIZE.x - 2)
 		var y = randi_range(1, MAZE_SIZE.y - 2)
 		if maze[y][x]:
-			print("Spawning Enemy")
 			var enemy = enemy_scene.instantiate()
 			enemy.player = player
 			enemy.global_position = floor_tilemap.map_to_local(Vector2i(x, y))
 			add_child(enemy)
-			print("Spanwned Enemy")
 			spawned += 1
 
 func check_player_on_end_tile():

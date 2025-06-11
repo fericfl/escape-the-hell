@@ -1,10 +1,13 @@
-[gd_scene load_steps=11 format=3 uid="uid://cfb2i8pmf5k75"]
+[gd_scene load_steps=12 format=3 uid="uid://cfb2i8pmf5k75"]
 
 [ext_resource type="Script" uid="uid://dgt617pmmevaq" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="2_6t5aa"]
 [ext_resource type="PackedScene" uid="uid://cr17uii3iawqj" path="res://Scenes/endgame_scene.tscn" id="2_vgqql"]
 [ext_resource type="Texture2D" uid="uid://c2p07pccdpd4t" path="res://Assets/Sprites/Characters/Player/Version1/imp_idle_anim_f0-sheet.png" id="3_6t5aa"]
 [ext_resource type="Texture2D" uid="uid://rnt43agm27qu" path="res://Assets/Sprites/circle.png" id="4_fkybt"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_fkybt"]
+radius = 33.5149
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
 size = Vector2(9, 8)
@@ -71,9 +74,14 @@ bullet_scene = ExtResource("2_6t5aa")
 animation_player = NodePath("AnimationPlayer")
 camera = NodePath("Camera2D")
 
+[node name="Area2D" type="Area2D" parent="." groups=["LightZone"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(1.5, -6)
+shape = SubResource("CircleShape2D_fkybt")
+
 [node name="FarLight" type="PointLight2D" parent="."]
-light_mask = 6
-position = Vector2(0, -12)
+position = Vector2(0, -6)
 color = Color(0.336607, 0.336608, 0.336607, 1)
 range_z_min = -300
 range_z_max = 300
@@ -83,7 +91,6 @@ texture = ExtResource("4_fkybt")
 texture_scale = 0.4
 
 [node name="CloseLight" type="PointLight2D" parent="."]
-light_mask = 6
 position = Vector2(0, -6)
 range_z_min = -300
 range_z_max = 300
@@ -116,6 +123,7 @@ wait_time = 0.5
 one_shot = true
 
 [node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
+visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(5, 5)

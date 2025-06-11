@@ -6,7 +6,8 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_khrry"]
 size = Vector2(18, 12)
 
-[node name="bullet" type="Area2D" groups=["Boss", "Player", "Wall"]]
+[node name="bullet" type="Area2D" groups=["Boss", "Enemies", "Player", "Wall"]]
+collision_layer = 7
 script = ExtResource("1_oduel")
 speed = 150.0
 

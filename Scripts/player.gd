@@ -39,8 +39,8 @@ func _ready():
 	if is_in_boss_room.scene_file_path.ends_with("light_maze.tscn"):
 		$Shadow.visible = !$Shadow.visible
 	if is_in_boss_room.scene_file_path.ends_with("boss_room.tscn"):
-		$CloseLight.enabled = !$CloseLight.enabled
-		$FarLight.enabled = !$FarLight.enabled
+		$Area2D/CloseLight.enabled = !$Area2D/CloseLight.enabled
+		$Area2D/FarLight.enabled = !$Area2D/FarLight.enabled
 
 func _physics_process(_delta):
 	if not ready_to_move:
@@ -57,12 +57,10 @@ func _physics_process(_delta):
 		input_dir.y += 1
 	
 	if Input.is_action_just_pressed("slide") and can_slide  and last_move_direction != Vector2.ZERO:
-		print("Slide input triggered")
 		can_slide = false
 		is_sliding = true
 		slideFrames = slideDuration
 		slide_direction = last_move_direction
-		print("Slide cooldown starting")
 		$SlideTime.start()
 	
 	input_dir = input_dir.normalized()
@@ -105,7 +103,6 @@ func take_damage():
 
 func die():
 	is_dead = true
-	print("Player dead")
 	
 	queue_free()
 	if endgame_scene != null:
@@ -132,7 +129,6 @@ func shoot():
 	$FaceLockTime.start()
 
 func _on_slide_time_timeout() -> void:
-	print("Slide is ready")
 	can_slide = true
 	
 func _on_face_lock_timer_timeout() -> void:

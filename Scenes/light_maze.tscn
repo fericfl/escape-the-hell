@@ -510,13 +510,11 @@ sources/0 = SubResource("TileSetAtlasSource_3al2v")
 script = ExtResource("1_sa20h")
 
 [node name="Player" parent="." instance=ExtResource("1_08d5v")]
-light_mask = 7
-visibility_layer = 7
 z_index = 1
 position = Vector2(-9, 20)
 moveSpeed = 100
 
-[node name="Walls" type="TileMapLayer" parent="."]
+[node name="Walls" type="TileMapLayer" parent="." groups=["Wall"]]
 z_index = 1
 texture_filter = 1
 tile_set = SubResource("TileSet_8cpy5")
@@ -527,7 +525,7 @@ tile_set = SubResource("TileSet_byea7")
 
 [node name="Hidden_Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_uafjb")]
 visible = false
-z_index = 2
+z_index = 1
 player = NodePath("../Player")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]

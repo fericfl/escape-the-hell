@@ -12,7 +12,14 @@ var time_between_shots_boss: float = 1.5
 var total_rounds_fired_boss := 1
 var max_player_health := 3
 var current_player_health = max_player_health
+var player_damage := 25
 var score = 0
+
+func get_player_damage() -> int:
+	return player_damage
+
+func set_player_damdage(new_damage: int):
+	player_damage = new_damage
 
 func set_score(new_score: int):
 	score = new_score

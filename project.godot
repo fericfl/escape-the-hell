@@ -36,6 +36,7 @@ Player=""
 Boss=""
 Wall=""
 Enemies=""
+LightZone=""
 
 [input]
 
