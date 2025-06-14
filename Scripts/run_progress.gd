@@ -6,7 +6,7 @@ signal souls_changed(new_souls)
 var HUD = preload("res://Scenes/hud.tscn")
 var base_score_threshold := 1000
 var base_boss_hits := 100
-var souls_collected := 10
+var souls_collected := 0
 var rounds_completed := 0
 var time_between_shots_boss: float = 1.5
 var total_rounds_fired_boss := 1
@@ -79,3 +79,17 @@ func get_max_player_health() -> int:
 func set_player_health(new_health: int):
 	max_player_health += new_health
 	current_player_health += new_health
+	
+func reset_stats():
+	base_score_threshold = 1000
+	base_boss_hits = 100
+	souls_collected = 0
+	rounds_completed = 0
+	time_between_shots_boss = 1.5
+	total_rounds_fired_boss = 1
+	max_player_health = 3
+	current_player_health = max_player_health
+	player_damage = 25
+	player_move_speed = 150
+	player_shots = 1
+	score = 0

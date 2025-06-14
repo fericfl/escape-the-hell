@@ -5,7 +5,8 @@ extends CharacterBody2D
 @export var slideSpeed = 2.0 # multiplier
 @export var slideDuration = 10 # in frames
 var max_health = RunProgress.get_max_player_health()
-var current_health = RunProgress.get_current_player_health() 
+var current_health = RunProgress.get_current_player_health()
+var number_of_shots = RunProgress.get_player_shots()
 @export var endgame_scene: PackedScene
 @export var bullet_scene: PackedScene
 @export var shoot_cooldown: float = 0.5
@@ -114,15 +115,21 @@ func shoot():
 	if bullet_scene == null:
 		push_error("No bullet scene assigned to player!")
 		return
+	var spacing = 10.0
+	var total_height = (number_of_shots - 1) * spacing
+	var direction_to_mouse
 	
-	var bullet = bullet_scene.instantiate()
-	bullet.bullet_owner = "Player"
-	get_parent().add_child(bullet)
-	bullet.global_position = global_position
-	
-	var mouse_position = get_viewport().get_camera_2d().get_global_mouse_position()
-	var direction_to_mouse = (mouse_position - global_position).normalized()
-	bullet.set_direction(direction_to_mouse)
+	for i in number_of_shots:
+		var bullet = bullet_scene.instantiate()
+		bullet.bullet_owner = "Player"
+		get_parent().add_child(bullet)
+		
+		var offset_y = -total_height / 2 + i * spacing
+		bullet.global_position = global_position + Vector2(0, offset_y)
+		
+		var mouse_position = get_viewport().get_camera_2d().get_global_mouse_position()
+		direction_to_mouse = (mouse_position - global_position).normalized()
+		bullet.set_direction(direction_to_mouse)
 	
 	$Sprite2D.flip_h = direction_to_mouse.x < 0
 	face_locked = true

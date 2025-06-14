@@ -1,7 +1,47 @@
-[gd_scene load_steps=3 format=3 uid="uid://bgcf0vm6y0pq"]
+[gd_scene load_steps=8 format=3 uid="uid://bgcf0vm6y0pq"]
 
 [ext_resource type="FontFile" uid="uid://bp5iutgg1v2hi" path="res://Assets/Font/joystix monospace.otf" id="1_524oj"]
 [ext_resource type="Script" uid="uid://hr2qfx40nwg0" path="res://Scripts/perk_screen.gd" id="1_gh262"]
+[ext_resource type="Shader" uid="uid://chfkmvjkf07q7" path="res://Scripts/pause_menu.gdshader" id="2_pfy3b"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_drdjh"]
+shader = ExtResource("2_pfy3b")
+shader_parameter/lod = 0.0
+
+[sub_resource type="Animation" id="Animation_pfy3b"]
+resource_name = "blur"
+length = 0.3
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:material:shader_parameter/lod")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 0.8, -0.15, 0, 0.15, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+
+[sub_resource type="Animation" id="Animation_drdjh"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:material:shader_parameter/lod")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_drdjh"]
+_data = {
+&"RESET": SubResource("Animation_drdjh"),
+&"blur": SubResource("Animation_pfy3b")
+}
 
 [node name="Perk Screen" type="Control"]
 layout_mode = 3
@@ -11,6 +51,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_gh262")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_drdjh")
+layout_mode = 0
+offset_right = 1920.0
+offset_bottom = 1079.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 custom_minimum_size = Vector2(960, 1080)
@@ -48,5 +94,10 @@ custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("1_524oj")
 text = "Continue"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_drdjh")
+}
 
 [connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]

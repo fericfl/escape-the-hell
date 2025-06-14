@@ -1,6 +1,7 @@
 extends Control
 
 @onready var perk_container = $VBoxContainer/HBoxContainer
+@onready var animation_player = $AnimationPlayer
 var font = preload("res://Assets/Font/joystix monospace.otf")
 var all_perks = [
 	{
@@ -42,7 +43,9 @@ var all_perks = [
 ]
 
 var shown_perks = []
+var shown_perks_map = {}
 var buttons = {}
+var bought_this_session = {}
 
 func _ready():
 	visible = false
@@ -52,10 +55,15 @@ func _ready():
 func show_perks():
 	get_tree().paused = true
 	visible = true
+	animation_player.play("blur")
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	bought_this_session.clear()
+	shown_perks_map.clear()
 	shown_perks = all_perks.duplicate()
 	shown_perks.shuffle()
 	shown_perks = shown_perks.slice(0,3)
+	for perk in shown_perks:
+		shown_perks_map[perk["name"]] = perk
 	_clear_perk_container()
 	_shown_perks()
 
@@ -84,36 +92,46 @@ func _shown_perks():
 		var btn = Button.new()
 		btn.text = "Buy"
 		btn.add_theme_font_override("font", font)
-		if RunProgress.get_total_souls_collected() < perk["cost"]:
+		if bought_this_session.has(perk["name"]):
+			btn.text = "Bought!"
+			btn.disabled = true
+		elif RunProgress.get_total_souls_collected() < perk["cost"]:
 			btn.text = "Not enough souls"
 			btn.disabled = true
 		else:
 			btn.text = "Buy"
 			btn.disabled = false
-		btn.pressed.connect(func():
-			perk.apply.call()
-			RunProgress.set_total_souls_collected(-perk["cost"])
-			RunProgress.HUD.update_hearts()
-			btn.disabled = true
-			btn.text = "Bought!"
-			_update_buttons()
-		)
+		
+		btn.pressed.connect(self._on_perk_button_pressed.bind(perk, btn))
 		buttons[perk["name"]] = btn
 		vbox.add_child(btn)
 		
 		perk_container.add_child(vbox)
 
 func _update_buttons():
-	var souls = RunProgress.get_total_souls_collected()
 	for perk_name in buttons.keys():
-		var index = shown_perks.find(func(p): return p["name"] == perk_name)
-		if index != -1:
-			var perk = shown_perks[index]
-			buttons[perk_name].disabled = souls < perk["cost"] or buttons[perk_name].disabled
-			if souls < perk["cost"]:
+		if bought_this_session.has(perk_name):
+			buttons[perk_name].disabled = true
+			buttons[perk_name].text = "Bought!"
+			continue
+		
+		if shown_perks_map.has(perk_name):
+			var perk = shown_perks_map[perk_name]
+			if RunProgress.get_total_souls_collected() < perk["cost"]:
+				buttons[perk_name].disabled = true
 				buttons[perk_name].text = "Not enough Souls!"
 			else:
+				buttons[perk_name].disabled = false
 				buttons[perk_name].text = "Buy"
+
+func _on_perk_button_pressed(perk, btn):
+	perk.apply.call()
+	RunProgress.set_total_souls_collected(-perk["cost"])
+	RunProgress.HUD.update_hearts()
+	bought_this_session[perk["name"]] = true
+	btn.disabled = true
+	btn.text = "Bought!"
+	_update_buttons()
 
 func _on_button_pressed() -> void:
 	get_tree().paused = false

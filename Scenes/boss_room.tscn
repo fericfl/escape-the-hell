@@ -315,13 +315,13 @@ tile_set = SubResource("TileSet_l7on7")
 
 [node name="HUD" parent="HUD" instance=ExtResource("7_djbyv")]
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Perk Screen" parent="CanvasLayer" instance=ExtResource("9_dc5tq")]
+process_mode = 3
+
 [node name="Pause Menu" type="CanvasLayer" parent="."]
 
 [node name="Pause Menu" parent="Pause Menu" instance=ExtResource("7_bnrw0")]
 texture_filter = 0
 metadata/_edit_use_anchors_ = true
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="Perk Screen" parent="CanvasLayer" instance=ExtResource("9_dc5tq")]
-process_mode = 3
