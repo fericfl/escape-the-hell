@@ -131,7 +131,6 @@ func check_spike_collision():
 				get_tree().change_scene_to_packed(endgame_scene)
 	else:
 		if did_hit_spike:
-			print("Current speed is:", START_SPEED)
 			did_hit_spike = false
 			current_speed = START_SPEED
 
@@ -140,10 +139,6 @@ func _on_area_entered(_area: Area2D) -> void:
 	souls += 1
 	RunProgress.set_total_souls_collected(1)
 	RunProgress.set_score(score)
-	print("Souls: ", souls)
-
-func set_player_health():
-	RunProgress.set_current_player_health(current_health)
 
 func _on_elapsed_time_timeout() -> void:
 	if current_speed < max_speed:

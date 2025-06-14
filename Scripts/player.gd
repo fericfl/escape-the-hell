@@ -39,8 +39,8 @@ func _ready():
 	if is_in_boss_room.scene_file_path.ends_with("light_maze.tscn"):
 		$Shadow.visible = !$Shadow.visible
 	if is_in_boss_room.scene_file_path.ends_with("boss_room.tscn"):
-		$Area2D/CloseLight.enabled = !$Area2D/CloseLight.enabled
-		$Area2D/FarLight.enabled = !$Area2D/FarLight.enabled
+		$CloseLight.enabled = !$CloseLight.enabled
+		$FarLight.enabled = !$FarLight.enabled
 
 func _physics_process(_delta):
 	if not ready_to_move:

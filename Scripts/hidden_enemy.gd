@@ -33,9 +33,11 @@ var path_update_distance_threshold := 32.0
 
 enum State {IDLE, HIDE, WAIT_FOR_ALLY, CHASE, ATTACK}
 var state: State = State.IDLE
+var update_offset := randi() % 10
+var frame_counter := 0
 
 #DEBUG
-var previous_state = State.IDLE
+var previous_state = State.HIDE
 
 func _ready():
 	add_to_group("Enemies")
@@ -151,6 +153,7 @@ func take_damage():
 	if current_health <= 0:
 		die()
 func die():
+	RunProgress.add_score(200)
 	queue_free()
 func attack_player():
 	print("attacking")
@@ -191,12 +194,20 @@ func is_in_shadow() -> bool:
 func get_nearby_ally_count() -> int:
 	var count = 0
 	for area in awareness_area.get_overlapping_areas():
-		var parent = area.get_parent()
-		if parent != self and parent.is_in_group("Enemies"):
+		var ally = area.get_parent()
+		if ally != self and ally.is_in_group("Enemies") and has_line_of_sight_to(ally):
 			print("I found this many allies: ", count)
 			count += 1
 	return count
-
+func has_line_of_sight_to(target: Node2D) -> bool:
+	var to_target = target.global_position - global_position
+	ray.global_position = global_position
+	ray.target_position = to_target
+	ray.force_raycast_update()
+	
+	if ray.is_colliding():
+		return ray.get_collider() == target
+	return true
 func _move_along_path():
 	if current_path_index >= path.size():
 		velocity = Vector2.ZERO

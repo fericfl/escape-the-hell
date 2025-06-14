@@ -12,6 +12,7 @@ const GROUND_TILE = Vector2i(0, 0)
 const SPIKE_TILE = Vector2i(3, 3)
 const VOID_TILE = Vector2i(9, 2)
 const WALL_TILE = Vector2i(9, 3)
+const SPIKE_Y_RANGES = [Vector2i(5,6), Vector2i(8,9), Vector2i(11,12)]
 
 const MAP_HEIGHT = 18
 const GROUND_WIDTH = 2
@@ -31,7 +32,6 @@ func _process(_delta):
 func generate_column(x: int) -> void:
 	var player_local_pos = tilemap.to_local(player.global_position)
 	var player_x_tile = tilemap.local_to_map(player_local_pos).x
-	const SPIKE_Y_RANGES = [Vector2i(5,6), Vector2i(8,9), Vector2i(11,12)]
 	
 	if x < player_x_tile + SPAWN_DELAY_TILES:
 		return
@@ -88,5 +88,4 @@ func generate_column(x: int) -> void:
 				add_child(soul)
 
 func _on_score_threshold_reached():
-	player.set_player_health()
 	get_tree().change_scene_to_file("res://Scenes/light_maze.tscn")

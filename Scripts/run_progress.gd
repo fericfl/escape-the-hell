@@ -6,25 +6,42 @@ signal souls_changed(new_souls)
 var HUD = preload("res://Scenes/hud.tscn")
 var base_score_threshold := 1000
 var base_boss_hits := 100
-var souls_collected := 0
+var souls_collected := 10
 var rounds_completed := 0
 var time_between_shots_boss: float = 1.5
 var total_rounds_fired_boss := 1
 var max_player_health := 3
 var current_player_health = max_player_health
 var player_damage := 25
+var player_move_speed := 150
+var player_shots := 1
 var score = 0
+
+func get_player_shots() -> int:
+	return player_shots
+
+func set_player_shots(no_of_shots: int):
+	player_shots += no_of_shots
+
+func get_player_move_speed() -> int:
+	return player_move_speed
+
+func set_player_move_speed(multiplier: float):
+	player_move_speed *= multiplier
 
 func get_player_damage() -> int:
 	return player_damage
 
 func set_player_damdage(new_damage: int):
-	player_damage = new_damage
+	player_damage += new_damage
 
 func set_score(new_score: int):
 	score = new_score
 	emit_signal("score_changed", score)
 
+func add_score(add_score: int):
+	score += add_score
+	emit_signal("score_changed", score)
 func get_score() -> int:
 	return score
 	

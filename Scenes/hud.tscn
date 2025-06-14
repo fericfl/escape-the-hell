@@ -37,10 +37,10 @@ anchor_left = 0.839
 anchor_top = 0.02
 anchor_right = 0.987
 anchor_bottom = 0.131
-offset_left = -0.880127
-offset_top = 0.399998
-offset_right = -0.0400391
-offset_bottom = -79.48
+offset_left = -23.88
+offset_top = 2.4
+offset_right = -23.0399
+offset_bottom = -17.48
 
 [node name="Score" type="RichTextLabel" parent="SoulsScoreContainer"]
 layout_mode = 2
@@ -52,7 +52,6 @@ tab_size = 1
 [node name="Souls" type="RichTextLabel" parent="SoulsScoreContainer"]
 layout_mode = 2
 theme_override_fonts/normal_font = ExtResource("4_6fbih")
-text = "Souls:"
 fit_content = true
 autowrap_mode = 0
 tab_size = 1
