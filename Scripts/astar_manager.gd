@@ -5,8 +5,12 @@ class_name AStarManager
 var astar := AStar2D.new()
 var cell_size := Vector2(16,16)
 var pos_to_id : Dictionary = {}
+var floor_tilemap: TileMapLayer
+var maze: Array
 
 func build_from_maze(maze: Array, tilemap: TileMapLayer):
+	floor_tilemap = tilemap
+	maze = maze
 	astar.clear()
 	pos_to_id.clear()
 	var point_id := 0

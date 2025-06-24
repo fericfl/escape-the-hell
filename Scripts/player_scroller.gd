@@ -49,17 +49,14 @@ func _physics_process(delta: float) -> void:
 	velocity.x = current_speed
 	velocity.y = 0
 	
-	# Scoring logic
 	var moved_distance = int(global_position.x - last_x)
 	if moved_distance > 0:
 		score += moved_distance
 		RunProgress.set_score(score)
 		last_x = int(global_position.x)
 	if score >= score_threshold and not score_threshold_reached_emitted:
-		RunProgress.set_total_souls_collected(souls)
 		emit_signal("score_threshold_reached")
 		score_threshold_reached_emitted = true
-	# Jump logic
 	if is_jumping:
 		jump_timer -= delta
 		var t = 1.0 - (jump_timer / JUMP_DURATION)

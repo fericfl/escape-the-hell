@@ -1,294 +1,235 @@
-class_name Enemy
 extends CharacterBody2D
+class_name Enemy
 
-@export var move_speed: float = 50
-@export var attack_range: float = 50
+enum State {IDLE, CHASE, ATTACK, ROAM, GROUP_CHASE, HIDING, COORDINATED_ATTACK}
+const MAZE_SIZE = Vector2i(40,25)
+
 @export var ally_radius: int = 2
+@export var attack_range: float = 8.0
+@export var move_speed: float = 40.0
 @export var animation_player: AnimationPlayer
-@export var spawn_delay: float = 1.0
-@export var player: CharacterBody2D
-@export var roam_wait_time := 2.0
-@export var wait_for_ally_time := 10.0
+@export var spawn_delay: float = 0.5
+@export var group_attack_distance: float = 200.0
 
-var max_health: int = 100
-var current_health: int
-var attack_cooldown := 1.5
-var attack_timer := 0.0
-var is_attacking := false
-var player_damage := RunProgress.get_player_damage()
-@onready var ray = $RayCast2D
-@onready var awareness_area = $AwarenessArea2D
-@onready var light_area = $LightAreaDetectorArea2D
-
-var distance_threshold = 10
-var spawn_delay_timer: float = 0.0
-var can_start = false
-var roam_timer := 0.0
-var is_waiting := false
-var wait_timer = 0.0
-var path: Array = []
-var current_path_index := 0
-var last_player_pos: Vector2 = Vector2.ZERO
-var path_update_distance_threshold := 32.0
-
-enum State {IDLE, HIDE, WAIT_FOR_ALLY, CHASE, ATTACK}
+var damage = RunProgress.get_player_damage()
 var state: State = State.IDLE
-var update_offset := randi() % 10
-var frame_counter := 0
+var can_start := false
+var can_attack := false
+var max_health := 50
+var current_health = max_health
+var attack_cooldown := 1.0
+var attack_timer := 0.0
+var spawn_timer := 0.0
+var roam_timer: float = 0.0
+var roam_target: Vector2 = Vector2.ZERO
+var assigned_attack_pos: Vector2 = Vector2.ZERO
+var current_hide_pos: Vector2 = Vector2.ZERO
 
-#DEBUG
-var previous_state = State.HIDE
+@onready var player = EnemyCoordinator.player
+
 
 func _ready():
-	add_to_group("Enemies")
-	current_health = max_health
-	spawn_delay_timer = spawn_delay
-	awareness_area.body_entered.connect(_on_Area2D_body_entered)
-	awareness_area.body_exited.connect(_on_Area2D_body_exited)
+	EnemyCoordinator.register(self)
+	EnemyCoordinator.connect("update_enemy_awareness", _on_awareness_update)
+	EnemyCoordinator.connect("group_attack_position", _on_group_attack_positions)
+	EnemyCoordinator.connect("send_hide_positions", _on_hide_positions)
+	spawn_timer = spawn_delay
 
-func _physics_process(delta: float) -> void:
+func _exit_tree():
+	EnemyCoordinator.unregister(self)
+
+func _on_awareness_update(enemy: Node2D, nearby_allies: int) -> void:
+	if enemy != self:
+		return
+	can_attack = nearby_allies >= ally_radius
+
+func _on_group_attack_positions(positions: Array) -> void:
+	if positions.size() > 0:
+		var closest_pos = positions[0]
+		var min_dist = global_position.distance_to(closest_pos)
+
+		for pos in positions:
+			var dist = global_position.distance_to(pos)
+			if dist < min_dist:
+				min_dist = dist
+				closest_pos = pos
+		
+		assigned_attack_pos = closest_pos
+
+		if state != State.ATTACK and state != State.COORDINATED_ATTACK:
+			state = State.COORDINATED_ATTACK
+
+func _on_hide_positions(positions: Array) -> void:
+	if positions.size() > 0 and state != State.HIDING:
+		var closest_pos = positions[0]
+		var min_dist = global_position.distance_to(closest_pos)
+
+		for pos in positions:
+			var dist = global_position.distance_to(pos)
+			if dist < min_dist:
+				min_dist = dist
+				closest_pos = pos
+			
+			current_hide_pos = closest_pos
+
+func _physics_process(delta: float):
 	if not can_start:
-		spawn_delay_timer -= delta
-		if spawn_delay_timer <= 0:
+		spawn_timer -= delta
+		if spawn_timer <= 0.0:
 			can_start = true
 		else:
 			return
-	var shadow = is_in_shadow()
-	var ally_count = get_nearby_ally_count()
 	
-	if state != State.ATTACK:
-		if not shadow and ally_count < ally_radius:
-			state = State.HIDE
-			_find_furthest_hide_point()
+	
+	if not player:
+		player = EnemyCoordinator.player
+		if not player:
 			return
-		elif state == State.WAIT_FOR_ALLY and ally_count >= ally_radius:
-			state = State.CHASE
-			return
-	if previous_state != state:
-		print("State:", State.keys()[state], " Path size:", path.size(), " Current index:", current_path_index)
-		previous_state = state
-
-	match state:
+	
+	match  state:
 		State.IDLE:
 			if can_see_player():
-				last_player_pos = player.global_position
-				if shadow:
-					if ally_count >= ally_radius:
-						state = State.CHASE
-					else:
-						state = State.WAIT_FOR_ALLY
-						wait_timer = wait_for_ally_time
+				if can_attack:
+					state = State.COORDINATED_ATTACK
 				else:
-					state = State.HIDE
-					_find_furthest_hide_point()
-		State.HIDE:
-			hide_behavior()
-		State.WAIT_FOR_ALLY:
-			wait_timer -= delta
-			
-			if shadow:
-				if player.global_position.distance_to(last_player_pos) > path_update_distance_threshold or path.is_empty() or current_path_index >= path.size():
-					last_player_pos = player.global_position
-					_find_path_to(last_player_pos)
-				_move_along_path()
+					state = State.CHASE
 			else:
-				velocity = Vector2.ZERO
-				move_and_slide()
+				state = State.ROAM
 		State.CHASE:
-			if not shadow and ally_count < ally_radius:
-				state = State.HIDE
-				_find_furthest_hide_point()
-			else:
-				chase_player()
-				if global_position.distance_to(player.global_position) <= attack_range:
-					state = State.ATTACK
-		State.ATTACK:
-			print("Attacking Player")
-			attack_player()
-
-func roam_randomly(delta: float) -> void:
-	if path.is_empty() or current_path_index >= path.size():
-		if not is_waiting:
-			is_waiting = true
-			roam_timer = roam_wait_time
-		else:
-			roam_timer -= delta
-			if roam_timer <= 0:
-				is_waiting = false
-				_pick_random_roam_point()
-	else:
-		_move_along_path()
-
-func look_for_player():
-	if can_see_player():
-		if get_nearby_ally_count() >= ally_radius:
-			state = State.CHASE
-		else:
-			state = State.HIDE
-
-func hide_behavior():
-	if path.is_empty() or current_path_index >= path.size():
-		_find_furthest_hide_point()
-	else:
-		_move_along_path()
-
-func chase_player():
-	if player.global_position.distance_to(last_player_pos) > path_update_distance_threshold or path.is_empty() or current_path_index >= path.size():
-		last_player_pos = player.global_position
-		_find_path_to(last_player_pos)
-
-	_move_along_path()
-
-	if not can_see_player():
-		var dist_to_last_pos = global_position.distance_to(last_player_pos)
-		if dist_to_last_pos < attack_range * 2:
-			state = State.IDLE
-		
-		else:
+			move_towards_player()
 			if global_position.distance_to(player.global_position) <= attack_range:
 				state = State.ATTACK
+			else:
+				state = State.ROAM
+		State.ATTACK:
+			if global_position.distance_to(player.global_position) > attack_range:
+				state = State.CHASE
+			else:
+				perform_attack(delta)
+				
+		State.COORDINATED_ATTACK:
+			if assigned_attack_pos != Vector2.ZERO:
+				var path = AstarManager.astar.get_point_path(
+					AstarManager.astar.get_closest_point(global_position),
+					AstarManager.astar.get_closest_point(assigned_attack_pos))
+				
+				if path.size() > 1:
+					var direction = (path[1] - global_position).normalized()
+					velocity = direction * move_speed
+					move_and_slide()
+				
+				if global_position.distance_to(assigned_attack_pos) < 10:
+					state = State.ATTACK
+		State.HIDING:
+			if current_hide_pos != Vector2.ZERO:
+				var path = AstarManager.astar.get_point_path(
+					AstarManager.astar.get_closest_point(global_position),
+					AstarManager.astar.get_closest_point(current_hide_pos))
+				
+				if path.size() > 1:
+					var direction = (path[1] - global_position).normalized()
+					velocity = direction * move_speed
+					move_and_slide()
+				if global_position.distance_to(current_hide_pos) < 10:
+					state = State.IDLE
+		State.ROAM:
+			roam_timer -= delta
+			if roam_timer <= 0 or global_position.distance_to(roam_target) < 5:
+				var valid_position_found = false
+				var attempts = 0
+				var max_attempts = 10
+				
+				while not valid_position_found and attempts < max_attempts:
+					var random_x = randi_range(1, MAZE_SIZE.x - 2)
+					var random_y = randi_range(1, MAZE_SIZE.y - 2)
+					var tile_pos = Vector2i(random_x, random_y)
+					if tile_pos.y < AstarManager.maze.size() and tile_pos.x < AstarManager.maze[0].size():
+						if AstarManager.maze[tile_pos.y][tile_pos.x]:
+							roam_target = AstarManager.floor_tilemap.map_to_local(tile_pos)
+							roam_timer = randf_range(2.0, 5.0)
+							valid_position_found = true
+					attempts += 1
+				if not valid_position_found:
+					roam_target = global_position
+			if roam_target != Vector2.ZERO:
+				var start_id = AstarManager.astar.get_closest_point(global_position)
+				var end_id = AstarManager.astar.get_closest_point(roam_target)
+				
+				if start_id != -1 and end_id != -1:
+					var path = AstarManager.astar.get_point_path(start_id, end_id)
+					if path.size() > 1:
+						velocity = (path[1] - global_position).normalized() * move_speed
+						move_and_slide()
+			
+			if can_see_player():
+				if can_attack:
+					state = State.CHASE
+				else:
+					state = State.ROAM
+		State.GROUP_CHASE:
+			if EnemyCoordinator.attack_positions.size() > 0:
+				var closest_pos = EnemyCoordinator.attack_positions[0]
+				var min_dist = global_position.distance_to(closest_pos)
+				
+				for pos in EnemyCoordinator.attack_positions:
+					var dist = global_position.distance_to(pos)
+					if dist < min_dist:
+						min_dist = dist
+						closest_pos = pos
+				
+				var start_id = AstarManager.astar.get_closest_point(global_position)
+				var end_id = AstarManager.astar.get_closest_point(closest_pos)
+				
+				if start_id != -1 and end_id != -1:
+					var path = AstarManager.astar.get_point_path(start_id, end_id)
+					if path.size() > 1:
+						velocity = (path[1] - global_position).normalized() * move_speed
+						move_and_slide()
+				if global_position.distance_to(closest_pos) < 20:
+					state = State.ATTACK
+			else:
+				state = State.CHASE
 
-func take_damage():
-	current_health -= player_damage
-	if current_health <= 0:
-		die()
-func die():
-	RunProgress.add_score(200)
-	queue_free()
-func attack_player():
-	print("attacking")
-	velocity = Vector2.ZERO
-	move_and_slide()
+func move_towards_player():
+	if not player:
+		return
+	var from_id = AstarManager.astar.get_closest_point(global_position)
+	var to_id = AstarManager.astar.get_closest_point(player.global_position)
 	
-	attack_timer -= get_physics_process_delta_time()
 	
+	var path = AstarManager.astar.get_point_path(from_id, to_id)
+	
+	if path.size() == 0:
+		return
+	
+	if path.size() > 1:
+		var direction = (path[1] - global_position).normalized()
+		velocity = direction * move_speed
+		move_and_slide()
 
-	if global_position.distance_to(player.global_position) > attack_range:
-		state = State.CHASE
-		is_attacking = false
-	else:
-		if attack_timer <= 0 and not is_attacking:
-			is_attacking = true
-			animation_player.play("chomp")
-			$Timer.start(0.5)
-			attack_timer = attack_cooldown
+func perform_attack(delta: float):
+	attack_timer -= delta
+	if attack_timer <= 0:
+		animation_player.play("chomp")
+		player.take_damage()
+		attack_timer = attack_cooldown
+	
+	if randf() < 0.1:
+		state = State.HIDING
 
 func can_see_player() -> bool:
-	if not player:
-		return false
-	var direction = player.global_position - global_position
-	ray.global_position = global_position
-	ray.target_position = direction
-	ray.force_raycast_update()
-
-	if ray.is_colliding():
-		return ray.get_collider() == player
+	$RayCast2D.target_position = player.global_position - global_position
+	$RayCast2D.force_raycast_update()
+	if $RayCast2D.is_colliding():
+		var collider = $RayCast2D.get_collider()
+		return collider == player
 	return false
 
-func is_in_shadow() -> bool:
-	for area in light_area.get_overlapping_areas():
-		if area.is_in_group("LightZone"):
-			return false
-	return true
+func take_damage():
+	current_health -= damage
+	if current_health <= 0:
+		die()
 
-func get_nearby_ally_count() -> int:
-	var count = 0
-	for area in awareness_area.get_overlapping_areas():
-		var ally = area.get_parent()
-		if ally != self and ally.is_in_group("Enemies") and has_line_of_sight_to(ally):
-			print("I found this many allies: ", count)
-			count += 1
-	return count
-func has_line_of_sight_to(target: Node2D) -> bool:
-	var to_target = target.global_position - global_position
-	ray.global_position = global_position
-	ray.target_position = to_target
-	ray.force_raycast_update()
-	
-	if ray.is_colliding():
-		return ray.get_collider() == target
-	return true
-func _move_along_path():
-	if current_path_index >= path.size():
-		velocity = Vector2.ZERO
-		move_and_slide()
-		return
-	
-	var target = path[current_path_index]
-	var dist = global_position.distance_to(target)
-	
-	if dist < distance_threshold:
-		current_path_index += 1
-	else:
-		var dir = (target - global_position).normalized()
-		velocity = dir * move_speed
-	move_and_slide()
-
-func _pick_random_roam_point():
-	var point_ids = AstarManager.astar.get_point_ids()
-	if point_ids.is_empty():
-		return
-	var start = AstarManager.astar.get_closest_point(global_position)
-	var random_id = point_ids[randi() % point_ids.size()]
-
-	if AstarManager.astar.has_point(start) and AstarManager.astar.has_point(random_id):
-		path = AstarManager.astar.get_point_path(start, random_id)
-		current_path_index = 0
-
-func _find_path_to(target_pos: Vector2):
-	var astar = AstarManager.astar
-	var start = astar.get_closest_point(global_position)
-	var end = astar.get_closest_point(target_pos)
-	
-	if astar.has_point(start) and astar.has_point(end):
-		path = astar.get_point_path(start, end)
-		current_path_index = 0
-
-func _find_furthest_hide_point():
-	var astar = AstarManager.astar
-	var best_point = null
-	var best_score = -INF
-
-	for point_id in astar.get_point_ids():
-		var point_pos = astar.get_point_position(point_id)
-		var distance_to_player = point_pos.distance_to(player.global_position)
-		
-		var los_ray = RayCast2D.new()
-		add_child(los_ray)
-		los_ray.global_position = player.global_position
-		los_ray.target_position = (point_pos - player.global_position).normalized() * distance_to_player
-		los_ray.force_raycast_update()
-		
-		var not_visible = not los_ray.is_colliding() or los_ray.get_collider() != self
-		los_ray.queue_free()
-		
-		var is_dark = true
-		for area in light_area.get_overlapping_areas():
-			if area.global_position.distance_to(point_pos) < 64:
-				is_dark = false
-				break
-		
-		var score = distance_to_player
-		if not_visible:
-			score += 100
-		if is_dark:
-			score += 50
-		
-		if score > best_score:
-			best_score = score
-			best_point = point_id
-	if best_point != null:
-		var start = astar.get_closest_point(global_position)
-		path = astar.get_point_path(start, best_point)
-		current_path_index = 0
-
-func _on_Area2D_body_entered(_body):
-	pass
-func _on_Area2D_body_exited(_body):
-	pass
-
-
-func _on_timer_timeout() -> void:
-	if player and global_position.distance_to(player.global_position) <= attack_range:
-		player.take_damage()
-	is_attacking = false
+func die():
+	EnemyCoordinator.unregister(self)
+	queue_free()

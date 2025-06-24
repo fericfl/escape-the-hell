@@ -1,10 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://dyk75r81fimdd"]
+[gd_scene load_steps=7 format=3 uid="uid://dyk75r81fimdd"]
 
 [ext_resource type="Script" uid="uid://d225jf3e8yyvb" path="res://Scripts/hidden_enemy.gd" id="1_e41xn"]
 [ext_resource type="Texture2D" uid="uid://bfxsrs2nl3itc" path="res://Assets/Sprites/Characters/Enemy/chort_idle_anim.png" id="2_q5lws"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_gvqik"]
-size = Vector2(122, 90)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4ol07"]
 size = Vector2(10, 13)
@@ -26,6 +23,7 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_q5lws"]
 resource_name = "chomp"
+length = 0.6
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -33,7 +31,7 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.266667, 0.5, 0.733333),
+"times": PackedFloat32Array(0, 0.133333, 0.3, 0.366667),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
 "values": [0, 1, 2, 3]
@@ -49,17 +47,6 @@ _data = {
 collision_layer = 2
 script = ExtResource("1_e41xn")
 animation_player = NodePath("AnimationPlayer")
-
-[node name="LightAreaDetectorArea2D" type="Area2D" parent="." groups=["Enemies"]]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LightAreaDetectorArea2D"]
-shape = SubResource("RectangleShape2D_gvqik")
-
-[node name="AwarenessArea2D" type="Area2D" parent="." groups=["Enemies"]]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AwarenessArea2D" groups=["Enemies"]]
-shape = SubResource("RectangleShape2D_gvqik")
-disabled = true
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["Enemies"]]
 texture_filter = 1

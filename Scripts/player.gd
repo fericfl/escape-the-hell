@@ -12,6 +12,7 @@ var number_of_shots = RunProgress.get_player_shots()
 @export var shoot_cooldown: float = 0.5
 @export var animation_player: AnimationPlayer
 @export var camera: Camera2D
+@export var collision_shape: CollisionShape2D
 
 var is_moving = false
 var can_slide = true
@@ -23,11 +24,17 @@ var is_dead: bool = false
 var shoot_timer: float = 0.0
 var face_locked: bool = false
 var ready_to_move = false
+var alert_timer: Timer
 
 func _ready():
 	await get_tree().process_frame
 	ready_to_move = true
 	var is_in_boss_room = get_tree().current_scene
+	alert_timer = Timer.new()
+	add_child(alert_timer)
+	alert_timer.one_shot = true
+	alert_timer.timeout.connect(_on_alert_timeout)
+	EnemyCoordinator.group_attack_position.connect(_on_group_attack)
 	if $SlideTime is Timer:
 		$SlideTime.wait_time = slideCooldown
 		$SlideTime.one_shot = true
@@ -115,25 +122,42 @@ func shoot():
 	if bullet_scene == null:
 		push_error("No bullet scene assigned to player!")
 		return
-	var spacing = 10.0
-	var total_height = (number_of_shots - 1) * spacing
-	var direction_to_mouse
+	var spacing = 5.0
+	var total_spread = (number_of_shots - 1) * spacing
+	
+	var mouse_position = get_viewport().get_camera_2d().get_global_mouse_position()
+	var direction_to_mouse = (mouse_position - global_position).normalized()
+	
+	var is_horizontal = abs(direction_to_mouse.x) > abs(direction_to_mouse.y)
 	
 	for i in number_of_shots:
 		var bullet = bullet_scene.instantiate()
 		bullet.bullet_owner = "Player"
 		get_parent().add_child(bullet)
 		
-		var offset_y = -total_height / 2 + i * spacing
-		bullet.global_position = global_position + Vector2(0, offset_y)
-		
-		var mouse_position = get_viewport().get_camera_2d().get_global_mouse_position()
-		direction_to_mouse = (mouse_position - global_position).normalized()
-		bullet.set_direction(direction_to_mouse)
+		var offset: Vector2
+		if number_of_shots > 1:
+			if is_horizontal:
+				offset = Vector2(0, -total_spread/2 + i*spacing)
+				bullet.global_position = global_position + offset
+			else:
+				offset = Vector2(-total_spread/2 + i*spacing, 0)
+				bullet.global_position = global_position + offset + Vector2(0, -10) 
+			bullet.set_direction(direction_to_mouse)
+		else:
+			bullet.global_position = global_position
+			bullet.set_direction(direction_to_mouse)
 	
 	$Sprite2D.flip_h = direction_to_mouse.x < 0
 	face_locked = true
 	$FaceLockTime.start()
+
+func _on_group_attack(_positions: Array):
+	$RichTextLabel.visible = true
+	alert_timer.start(2.0)
+
+func _on_alert_timeout():
+	$RichTextLabel.visible = false
 
 func _on_slide_time_timeout() -> void:
 	can_slide = true

@@ -5,12 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://cr17uii3iawqj" path="res://Scenes/endgame_scene.tscn" id="2_vgqql"]
 [ext_resource type="Texture2D" uid="uid://c2p07pccdpd4t" path="res://Assets/Sprites/Characters/Player/Version1/imp_idle_anim_f0-sheet.png" id="3_6t5aa"]
 [ext_resource type="Texture2D" uid="uid://rnt43agm27qu" path="res://Assets/Sprites/circle.png" id="4_fkybt"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_fkybt"]
-radius = 33.5149
+[ext_resource type="FontFile" uid="uid://bp5iutgg1v2hi" path="res://Assets/Font/joystix monospace.otf" id="6_x3wgy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(9, 8)
+size = Vector2(9, 10)
 
 [sub_resource type="Animation" id="Animation_x3wgy"]
 length = 0.001
@@ -66,19 +64,14 @@ _data = {
 &"walk": SubResource("Animation_vgqql")
 }
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "camera") groups=["Player"]]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "camera", "collision_shape") groups=["Player"]]
 script = ExtResource("1_cvnsp")
 moveSpeed = 150
 endgame_scene = ExtResource("2_vgqql")
 bullet_scene = ExtResource("2_6t5aa")
 animation_player = NodePath("AnimationPlayer")
 camera = NodePath("Camera2D")
-
-[node name="Area2D" type="Area2D" parent="." groups=["LightZone"]]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-position = Vector2(1.5, -6)
-shape = SubResource("CircleShape2D_fkybt")
+collision_shape = NodePath("CollisionShape2D")
 
 [node name="FarLight" type="PointLight2D" parent="."]
 position = Vector2(0, -6)
@@ -115,7 +108,7 @@ texture = ExtResource("3_6t5aa")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -6)
+position = Vector2(0.5, -5)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="SlideTime" type="Timer" parent="."]
@@ -136,6 +129,19 @@ libraries = {
 [node name="FaceLockTime" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+visible = false
+z_index = 2
+texture_filter = 1
+offset_left = -2.0
+offset_top = -24.0
+offset_right = 10.0
+offset_bottom = -4.0
+theme_override_fonts/normal_font = ExtResource("6_x3wgy")
+theme_override_font_sizes/normal_font_size = 10
+text = "!"
+tab_size = 0
 
 [connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
 [connection signal="timeout" from="FaceLockTime" to="." method="_on_face_lock_timer_timeout"]

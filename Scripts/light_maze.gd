@@ -19,6 +19,7 @@ var START_POS := Vector2i(1, MAZE_SIZE.y / 2)
 var END_POS := Vector2i(MAZE_SIZE.x - 2, MAZE_SIZE.y / 2)
 
 func _physics_process(_delta: float) -> void:
+	EnemyCoordinator.update_enemy_positions()
 	check_player_on_end_tile()
 
 func _ready():
@@ -73,6 +74,8 @@ func is_inside_maze(pos: Vector2i) -> bool:
 func spawn_player():
 	var start_pos = wall_tilemap.map_to_local(START_POS)
 	player.global_position = wall_tilemap.to_global(start_pos)
+	EnemyCoordinator.set_player(player)
+
 
 func spawn_enemies(count: int = 3):
 	var spawned = 0

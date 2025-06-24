@@ -44,14 +44,12 @@ func take_damage():
 		return
 	
 	current_hits += player_damage
-	print("Boss hit! Hits:", current_hits, "/", max_hits)
 	
 	if current_hits >= max_hits:
 		die()
 
 func die():
 	is_dead = true
-	print("Boss defeated!")
 	
 	RunProgress.rounds_completed += 1
 	emit_signal("boss_defeated")

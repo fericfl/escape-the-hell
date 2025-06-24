@@ -44,7 +44,7 @@ func add_score(add_score: int):
 	emit_signal("score_changed", score)
 func get_score() -> int:
 	return score
-	
+
 
 func get_current_total_rounds_fired_boss() -> int:
 	return total_rounds_fired_boss + (rounds_completed * 2)
@@ -68,7 +68,6 @@ func set_total_souls_collected(collected_souls: int) -> void:
 func set_current_player_health(current_health: int):
 	current_player_health = current_health
 	HUD.update_hearts()
-	print("Updating health: ", current_health, " / ", max_player_health)
 
 func get_current_player_health() -> int:
 	return current_player_health
@@ -79,7 +78,7 @@ func get_max_player_health() -> int:
 func set_player_health(new_health: int):
 	max_player_health += new_health
 	current_player_health += new_health
-	
+
 func reset_stats():
 	base_score_threshold = 1000
 	base_boss_hits = 100

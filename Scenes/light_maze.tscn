@@ -511,7 +511,6 @@ script = ExtResource("1_sa20h")
 
 [node name="Player" parent="." instance=ExtResource("1_08d5v")]
 z_index = 1
-position = Vector2(-9, 20)
 moveSpeed = 100
 
 [node name="Walls" type="TileMapLayer" parent="." groups=["Wall"]]
@@ -523,13 +522,11 @@ tile_set = SubResource("TileSet_8cpy5")
 texture_filter = 1
 tile_set = SubResource("TileSet_byea7")
 
-[node name="Hidden_Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("6_uafjb")]
+[node name="Hidden_Enemy" parent="." instance=ExtResource("6_uafjb")]
 visible = false
 z_index = 1
-player = NodePath("../Player")
 
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
-visible = false
 color = Color(0, 0, 0, 1)
 
 [node name="HUD" type="CanvasLayer" parent="."]
