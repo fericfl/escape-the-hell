@@ -6,7 +6,7 @@ extends Node2D
 
 var next_room = "res://Scenes/boss_room.tscn"
 var enemy_scene = preload("res://Scenes/hidden_enemy.tscn")
-const MAZE_SIZE = Vector2i(25,25)
+const MAZE_SIZE = Vector2i(40,25)
 const FLOOR_TILES = [Vector2i(1,0), Vector2i(0,0), Vector2i(2,0), Vector2i(1,1)]
 const TERRAIN_SET = 0
 const WALL_TERRAIN_ID = 0
@@ -19,6 +19,7 @@ var START_POS := Vector2i(1, MAZE_SIZE.y / 2)
 var END_POS := Vector2i(MAZE_SIZE.x - 2, MAZE_SIZE.y / 2)
 
 func _physics_process(_delta: float) -> void:
+	EnemyCoordinator.update_enemy_positions()
 	check_player_on_end_tile()
 
 func _ready():
@@ -73,6 +74,8 @@ func is_inside_maze(pos: Vector2i) -> bool:
 func spawn_player():
 	var start_pos = wall_tilemap.map_to_local(START_POS)
 	player.global_position = wall_tilemap.to_global(start_pos)
+	EnemyCoordinator.set_player(player)
+
 
 func spawn_enemies(count: int = 3):
 	var spawned = 0
@@ -80,12 +83,10 @@ func spawn_enemies(count: int = 3):
 		var x = randi_range(1, MAZE_SIZE.x - 2)
 		var y = randi_range(1, MAZE_SIZE.y - 2)
 		if maze[y][x]:
-			print("Spawning Enemy")
 			var enemy = enemy_scene.instantiate()
 			enemy.player = player
 			enemy.global_position = floor_tilemap.map_to_local(Vector2i(x, y))
 			add_child(enemy)
-			print("Spanwned Enemy")
 			spawned += 1
 
 func check_player_on_end_tile():

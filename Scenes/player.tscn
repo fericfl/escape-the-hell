@@ -1,13 +1,14 @@
-[gd_scene load_steps=11 format=3 uid="uid://cfb2i8pmf5k75"]
+[gd_scene load_steps=12 format=3 uid="uid://cfb2i8pmf5k75"]
 
 [ext_resource type="Script" uid="uid://dgt617pmmevaq" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="PackedScene" uid="uid://42rdl68igss" path="res://Scenes/bullet.tscn" id="2_6t5aa"]
 [ext_resource type="PackedScene" uid="uid://cr17uii3iawqj" path="res://Scenes/endgame_scene.tscn" id="2_vgqql"]
 [ext_resource type="Texture2D" uid="uid://c2p07pccdpd4t" path="res://Assets/Sprites/Characters/Player/Version1/imp_idle_anim_f0-sheet.png" id="3_6t5aa"]
 [ext_resource type="Texture2D" uid="uid://rnt43agm27qu" path="res://Assets/Sprites/circle.png" id="4_fkybt"]
+[ext_resource type="FontFile" uid="uid://bp5iutgg1v2hi" path="res://Assets/Font/joystix monospace.otf" id="6_x3wgy"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cvnsp"]
-size = Vector2(10, 14)
+size = Vector2(9, 10)
 
 [sub_resource type="Animation" id="Animation_x3wgy"]
 length = 0.001
@@ -63,15 +64,26 @@ _data = {
 &"walk": SubResource("Animation_vgqql")
 }
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "camera") groups=["Player"]]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("animation_player", "camera", "collision_shape") groups=["Player"]]
 script = ExtResource("1_cvnsp")
 moveSpeed = 150
 endgame_scene = ExtResource("2_vgqql")
 bullet_scene = ExtResource("2_6t5aa")
 animation_player = NodePath("AnimationPlayer")
 camera = NodePath("Camera2D")
+collision_shape = NodePath("CollisionShape2D")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="FarLight" type="PointLight2D" parent="."]
+position = Vector2(0, -6)
+color = Color(0.336607, 0.336608, 0.336607, 1)
+range_z_min = -300
+range_z_max = 300
+range_item_cull_mask = 3
+shadow_filter = 2
+texture = ExtResource("4_fkybt")
+texture_scale = 0.4
+
+[node name="CloseLight" type="PointLight2D" parent="."]
 position = Vector2(0, -6)
 range_z_min = -300
 range_z_max = 300
@@ -81,13 +93,22 @@ texture = ExtResource("4_fkybt")
 texture_scale = 0.2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
 texture_filter = 1
 position = Vector2(-1.19209e-07, -8)
 texture = ExtResource("3_6t5aa")
 hframes = 4
 
+[node name="Shadow" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 0.4)
+texture_filter = 1
+position = Vector2(0, 4)
+scale = Vector2(1, -1)
+texture = ExtResource("3_6t5aa")
+hframes = 4
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, -6)
+position = Vector2(0.5, -5)
 shape = SubResource("RectangleShape2D_cvnsp")
 
 [node name="SlideTime" type="Timer" parent="."]
@@ -95,6 +116,7 @@ wait_time = 0.5
 one_shot = true
 
 [node name="bullet" parent="." instance=ExtResource("2_6t5aa")]
+visible = false
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(5, 5)
@@ -107,6 +129,19 @@ libraries = {
 [node name="FaceLockTime" type="Timer" parent="."]
 wait_time = 0.5
 one_shot = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+visible = false
+z_index = 2
+texture_filter = 1
+offset_left = -2.0
+offset_top = -24.0
+offset_right = 10.0
+offset_bottom = -4.0
+theme_override_fonts/normal_font = ExtResource("6_x3wgy")
+theme_override_font_sizes/normal_font_size = 10
+text = "!"
+tab_size = 0
 
 [connection signal="timeout" from="SlideTime" to="." method="_on_slide_time_timeout"]
 [connection signal="timeout" from="FaceLockTime" to="." method="_on_face_lock_timer_timeout"]

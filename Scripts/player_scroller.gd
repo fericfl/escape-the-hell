@@ -4,7 +4,6 @@ signal score_threshold_reached
 
 @export var START_SPEED = 50
 @export var SLOW_SPEED = 15
-@export var lives: int = 3
 @export var JUMP_HEIGHT = 12
 @export var JUMP_DURATION = 0.5 
 @export var endgame_scene: PackedScene
@@ -14,7 +13,10 @@ signal score_threshold_reached
 @export var SPIKE_TILE = Vector2i(3, 3)
 @onready var shadow = $Shadow
 
+var max_health = RunProgress.get_max_player_health()
+var current_health = RunProgress.get_current_player_health()
 var score_threshold: int  = RunProgress.get_current_score_threshold()
+
 const LANE_HEIGHT = 32
 const LANES = [96, 144, 192]
 var current_lane = 1
@@ -30,28 +32,31 @@ var last_x = 0
 var score_threshold_reached_emitted = false
 var speed_increment = 5
 var max_speed = 300
+var ready_to_move = false
 
 func _ready():
+	await get_tree().process_frame
+	ready_to_move = true
 	position.y = LANES[current_lane]
 	target_y = position.y
 	$Area2D.connect("area_entered", Callable(self, "_on_area_entered"))
 
 
 func _physics_process(delta: float) -> void:
+	if not ready_to_move:
+		return
 	global_position.y = lerp(global_position.y, target_y, 8 * delta)
 	velocity.x = current_speed
 	velocity.y = 0
 	
-	# Scoring logic
 	var moved_distance = int(global_position.x - last_x)
 	if moved_distance > 0:
 		score += moved_distance
+		RunProgress.set_score(score)
 		last_x = int(global_position.x)
 	if score >= score_threshold and not score_threshold_reached_emitted:
-		RunProgress.add_total_souls_collected(souls)
 		emit_signal("score_threshold_reached")
 		score_threshold_reached_emitted = true
-	# Jump logic
 	if is_jumping:
 		jump_timer -= delta
 		var t = 1.0 - (jump_timer / JUMP_DURATION)
@@ -105,6 +110,7 @@ func start_jump():
 
 
 func check_spike_collision():
+	
 	if is_jumping:
 		did_hit_spike = false
 		return
@@ -115,20 +121,23 @@ func check_spike_collision():
 	if tile == SPIKE_TILE:
 		if not did_hit_spike:
 			did_hit_spike = true
-			lives -= 1
+			current_health -= 1
+			RunProgress.set_current_player_health(current_health)
 			current_speed = SLOW_SPEED
-			if lives <= 0:
+			if current_health <= 0:
 				get_tree().change_scene_to_packed(endgame_scene)
 	else:
-		did_hit_spike = false
-		current_speed = START_SPEED
+		if did_hit_spike:
+			did_hit_spike = false
+			current_speed = START_SPEED
 
 func _on_area_entered(_area: Area2D) -> void:
 	score += 100
 	souls += 1
-	print("Souls: ", souls)
-
+	RunProgress.set_total_souls_collected(1)
+	RunProgress.set_score(score)
 
 func _on_elapsed_time_timeout() -> void:
 	if current_speed < max_speed:
 		current_speed += speed_increment
+		START_SPEED = current_speed

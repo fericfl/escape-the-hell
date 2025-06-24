@@ -1,0 +1,72 @@
+[gd_scene load_steps=4 format=3 uid="uid://dnauknxyqt4gf"]
+
+[ext_resource type="FontFile" uid="uid://bp5iutgg1v2hi" path="res://Assets/Font/joystix monospace.otf" id="1_28flt"]
+[ext_resource type="Script" uid="uid://dfwm8gcxcnysx" path="res://Scripts/main_menu.gd" id="1_48xlc"]
+[ext_resource type="Texture2D" uid="uid://2ct7hoq6wtrb" path="res://Assets/Backgrounds/main_menu_background.jpg" id="2_1ehe0"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_48xlc")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.001
+anchor_bottom = 0.997
+offset_right = -0.920044
+offset_bottom = 0.23999
+texture = ExtResource("2_1ehe0")
+expand_mode = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -572.0
+offset_bottom = 572.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="RichTextLabel" parent="VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("1_28flt")
+theme_override_font_sizes/normal_font_size = 60
+text = "Escape the Hell"
+fit_content = true
+tab_size = 1
+horizontal_alignment = 1
+
+[node name="Play" type="Button" parent="VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("1_28flt")
+theme_override_font_sizes/font_size = 48
+text = "Play
+"
+icon_alignment = 1
+
+[node name="Quit" type="Button" parent="VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("1_28flt")
+theme_override_font_sizes/font_size = 48
+text = "Quit
+"
+
+[connection signal="pressed" from="VBoxContainer/Play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="VBoxContainer/Quit" to="." method="_on_quit_pressed"]

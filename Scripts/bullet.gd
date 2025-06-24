@@ -21,6 +21,9 @@ func _on_body_entered(body):
 		if body.is_in_group("Boss"):
 			body.take_damage()
 			queue_free()
+		elif body.is_in_group("Enemies"):
+			body.take_damage()
+			queue_free()
 		elif body.is_in_group("Wall"):
 			queue_free()
 	
@@ -30,3 +33,4 @@ func _on_body_entered(body):
 			queue_free()
 		elif body.is_in_group("Wall"):
 			queue_free()
+	

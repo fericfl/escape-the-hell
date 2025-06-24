@@ -4,20 +4,23 @@
 [ext_resource type="Texture2D" uid="uid://p2mohtyjwx1w" path="res://Assets/Sprites/HUD/fire_ball_sprite.png" id="2_oduel"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_khrry"]
-size = Vector2(18, 12)
+size = Vector2(13, 8)
 
-[node name="bullet" type="Area2D" groups=["Boss", "Player", "Wall"]]
+[node name="bullet" type="Area2D" groups=["Boss", "Enemies", "Player", "Wall"]]
+collision_layer = 3
+collision_mask = 7
 script = ExtResource("1_oduel")
 speed = 150.0
 
 [node name="Bullet" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(0, -7)
+position = Vector2(0, -3)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_oduel")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -7)
+light_mask = 7
+position = Vector2(1.25, -3)
 scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_khrry")
 

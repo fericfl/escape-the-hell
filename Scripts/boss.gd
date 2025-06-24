@@ -6,6 +6,7 @@ signal boss_defeated
 @export var bullet_scene: PackedScene
 @export var animation_player: AnimationPlayer
 
+var player_damage = RunProgress.get_player_damage()
 var next_scene = preload("res://Scenes/infinite_run.tscn")
 var max_hits: int = RunProgress.get_current_boss_hits()
 var shoot_cooldown = RunProgress.get_current_tbsb()
@@ -42,15 +43,13 @@ func take_damage():
 	if is_dead:
 		return
 	
-	current_hits += 25
-	print("Boss hit! Hits:", current_hits, "/", max_hits)
+	current_hits += player_damage
 	
 	if current_hits >= max_hits:
 		die()
 
 func die():
 	is_dead = true
-	print("Boss defeated!")
 	
 	RunProgress.rounds_completed += 1
 	emit_signal("boss_defeated")

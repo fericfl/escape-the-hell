@@ -1,17 +1,65 @@
-[gd_scene load_steps=4 format=3 uid="uid://b2x6pjeh2mawp"]
+[gd_scene load_steps=7 format=3 uid="uid://b2x6pjeh2mawp"]
 
 [ext_resource type="Script" uid="uid://qp2b1og8uc1t" path="res://Scripts/soul.gd" id="1_jrtix"]
-[ext_resource type="Texture2D" uid="uid://b7g83p6ulhfb2" path="res://icon.svg" id="2_dmpwr"]
+[ext_resource type="Texture2D" uid="uid://b4qc5g2sa113p" path="res://Assets/Sprites/HUD/soul_sprite_animation.png" id="2_dmpwr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dmpwr"]
-size = Vector2(12, 12)
+size = Vector2(14, 13)
 
-[node name="Soul" type="Area2D" groups=["Player"]]
+[sub_resource type="Animation" id="Animation_ey5r1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(-0.0333333),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_rjqw3"]
+resource_name = "idle"
+length = 0.75
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.433333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [0, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rjqw3"]
+_data = {
+&"RESET": SubResource("Animation_ey5r1"),
+&"idle": SubResource("Animation_rjqw3")
+}
+
+[node name="Soul" type="Area2D" node_paths=PackedStringArray("animation_player") groups=["Player"]]
 script = ExtResource("1_jrtix")
+animation_player = NodePath("AnimationPlayer")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
 shape = SubResource("RectangleShape2D_dmpwr")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.09, 0.094)
+texture_filter = 1
+scale = Vector2(1, 1.044)
 texture = ExtResource("2_dmpwr")
+hframes = 2
+frame = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_rjqw3")
+}
