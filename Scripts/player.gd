@@ -154,7 +154,7 @@ func shoot():
 
 func _on_group_attack(_positions: Array):
 	$RichTextLabel.visible = true
-	alert_timer.start(2.0)
+	alert_timer.start(1.0)
 
 func _on_alert_timeout():
 	$RichTextLabel.visible = false

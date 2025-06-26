@@ -5,5 +5,6 @@ func _ready() -> void:
 	
 func _on_boss_defeated():
 	RunProgress.add_score(500)
+	RunProgress.add_current_player_health(1)
 	var perk_ui = get_node("CanvasLayer/Perk Screen")
 	perk_ui.show_perks()

@@ -9,7 +9,7 @@ const MAZE_SIZE = Vector2i(40,25)
 @export var move_speed: float = 40.0
 @export var animation_player: AnimationPlayer
 @export var spawn_delay: float = 0.5
-@export var group_attack_distance: float = 200.0
+@export var group_attack_distance: float = 400.0
 
 var damage = RunProgress.get_player_damage()
 var state: State = State.IDLE

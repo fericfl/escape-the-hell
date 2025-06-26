@@ -16,6 +16,7 @@ signal score_threshold_reached
 var max_health = RunProgress.get_max_player_health()
 var current_health = RunProgress.get_current_player_health()
 var score_threshold: int  = RunProgress.get_current_score_threshold()
+var total_score: int = RunProgress.get_score()
 
 const LANE_HEIGHT = 32
 const LANES = [96, 144, 192]
@@ -51,8 +52,9 @@ func _physics_process(delta: float) -> void:
 	
 	var moved_distance = int(global_position.x - last_x)
 	if moved_distance > 0:
+		total_score += moved_distance
 		score += moved_distance
-		RunProgress.set_score(score)
+		RunProgress.set_score(total_score)
 		last_x = int(global_position.x)
 	if score >= score_threshold and not score_threshold_reached_emitted:
 		emit_signal("score_threshold_reached")
@@ -132,10 +134,11 @@ func check_spike_collision():
 			current_speed = START_SPEED
 
 func _on_area_entered(_area: Area2D) -> void:
+	total_score += 100
 	score += 100
 	souls += 1
 	RunProgress.set_total_souls_collected(1)
-	RunProgress.set_score(score)
+	RunProgress.set_score(total_score)
 
 func _on_elapsed_time_timeout() -> void:
 	if current_speed < max_speed:
