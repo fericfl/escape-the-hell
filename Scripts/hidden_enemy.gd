@@ -5,7 +5,7 @@ enum State {IDLE, CHASE, ATTACK, ROAM, GROUP_CHASE, HIDING, COORDINATED_ATTACK}
 const MAZE_SIZE = Vector2i(40,25)
 
 @export var ally_radius: int = 2
-@export var attack_range: float = 8.0
+@export var attack_range: float = 16.0
 @export var move_speed: float = 40.0
 @export var animation_player: AnimationPlayer
 @export var spawn_delay: float = 0.5
